@@ -53,12 +53,6 @@
 
 @section('script')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                let message = document.getElementById('message');
-                message.parentNode.removeChild(message);
-            }, 3000);
-        });
         $(document).ready(function() {
             $('#data').DataTable({
                 ajax: '{{ route('teams') }}',

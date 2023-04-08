@@ -80,12 +80,6 @@
 @endsection
 @section('script')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                let message = document.getElementById('message');
-                message.parentNode.removeChild(message);
-            }, 3000);
-        });
         const passwordToggle = document.getElementById("password-toggle");
         const passwordInput = document.getElementById("password");
         passwordToggle.addEventListener("click", function() {

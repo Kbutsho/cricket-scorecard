@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cricket_matches', function (Blueprint $table) {
+        Schema::create('innings', function (Blueprint $table) {
             $table->id();
-            $table->integer('team_a_id');
-            $table->integer('team_b_id');
-            $table->string('venue');
-            $table->string('format');
-            $table->dateTime('time');
+            $table->integer('match_id');
+            $table->integer('battingTeam_id');
+            $table->integer('bowlingTeam_id');
+            $table->string('innings');
             $table->string('status');
             $table->timestamps();
         });
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cricket_matches');
+        Schema::dropIfExists('innings');
     }
 };

@@ -22,15 +22,24 @@ class MatchController extends Controller
             $match->status = 'ongoing';
             $match->save();
         }
-
+        //  $match = CricketMatch::with(['teamA', 'teamB'])->get();
+        //  dd($match);
         if ($request->ajax()) {
-            $match = CricketMatch::query();
+            $match = CricketMatch::with(['teamA', 'teamB']);
             return DataTables::of($match)
+                ->addColumn('team_a_name', function ($match) {
+                    return $match->teamA->name;
+                })
+                ->addColumn('team_b_name', function ($match) {
+                    return $match->teamB->name;
+                })
+                ->rawColumns(['team_a_name', 'team_b_name'])
                 ->make(true);
         }
         $matches = CricketMatch::count();
         return view('pages.matches.matchList')->with('matches', $matches);
     }
+
     public function ShowAddMatchForm()
     {
         $teams = Team::all();
@@ -44,16 +53,17 @@ class MatchController extends Controller
     }
     public function AddMatch(Request $request)
     {
+
         $request->validate([
-            'team_a' => 'required',
-            'team_b' => 'required',
+            'team_a_id' => 'required',
+            'team_b_id' => 'required',
             'venue' => 'required',
             'time' => 'required',
             'format' => 'required'
         ]);
         $match = new CricketMatch();
-        $match->team_a = $request->team_a;
-        $match->team_b = $request->team_b;
+        $match->team_a_id = $request->team_a_id;
+        $match->team_b_id = $request->team_b_id;
         $match->venue = $request->venue;
         $match->time = $request->time;
         $match->format = $request->format;

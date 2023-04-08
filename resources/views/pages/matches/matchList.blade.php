@@ -55,12 +55,6 @@
     {{-- for time formating: am - pm --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                let message = document.getElementById('message');
-                message.parentNode.removeChild(message);
-            }, 3000);
-        });
         $(document).ready(function() {
             let table = $('#data').DataTable({
                 ajax: '{{ route('matches') }}',
@@ -76,11 +70,11 @@
                         className: 'text-center'
                     },
                     {
-                        data: 'team_a',
-                        name: 'team_a',
+                        data: 'team_a_name',
+                        name: 'team_a_name',
                         className: 'text-center',
                         render: function(data, type, row) {
-                            return '<span>' + row.team_a + ' vs ' + row.team_b + '</span>';
+                            return '<span>' + row.team_a_name + ' vs ' + row.team_b_name + '</span>';
                         }
                     },
                     {
@@ -140,7 +134,7 @@
             });
             setInterval(function() {
                 table.ajax.reload();
-            }, 60000); // 1 minute
+            }, 10000); // 1/6 minute
         });
     </script>
 @endsection

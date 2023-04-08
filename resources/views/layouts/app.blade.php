@@ -12,6 +12,10 @@
     {{-- dataTables --}}
     <link href="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.13.4/datatables.min.css" rel="stylesheet" />
     <script src="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.13.4/datatables.min.js"></script>
+    {{-- sweet alert --}}
+    <script src="https://common.olemiss.edu/_js/sweet-alert/sweet-alert.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://common.olemiss.edu/_js/sweet-alert/sweet-alert.css">
     @yield('style')
 </head>
 
@@ -23,6 +27,14 @@
     </script>
     {{-- fontawesome --}}
     <script src="https://kit.fontawesome.com/5301593776.js" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+            setTimeout(function() {
+                let message = $('.message');
+                message.remove();
+            }, 5000);
+        });
+    </script>
     @yield('script')
 </body>
 

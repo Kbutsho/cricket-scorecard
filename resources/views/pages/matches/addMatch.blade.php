@@ -49,38 +49,41 @@
                         <div class="px-2">
                             <div class="mb-3">
                                 <label for="team_a" class="fw-bold my-1">Team A</label>
-                                <select style="width: 300px" name="team_a" class="form-select">
-                                    <option value="" disabled selected>Select team a</option>
+                                <select style="width: 300px" id="team-a" name="team_a_id" class="form-select">
+                                    <option value="" disabled selected>Select team A</option>
                                     @foreach ($teams as $team)
-                                        <option value="{{ $team->name }}" @if ($team->name == old('team_a')) selected @endif>
+                                        <option value="{{ $team->id }}"
+                                            @if ($team->id == old('team_a_id')) selected @endif>
                                             {{ $team->name }}</option>
                                     @endforeach
                                 </select>
-                                @error('team_a')
+                                @error('team_a_id')
                                     <span>{{ $message }}</span>
                                 @enderror
                             </div>
-    
+
                             <div class="mb-3">
                                 <label for="team_b" class="fw-bold my-1">Team B</label>
-                                <select name="team_b" class="form-select">
+                                <select id="team-b" name="team_b_id" class="form-select">
                                     <option value="" disabled selected>Select team B</option>
                                     @foreach ($teams as $team)
-                                        <option value="{{ $team->name }}" @if ($team->name == old('team_b')) selected @endif>
+                                        <option value="{{ $team->id }}"
+                                            @if ($team->id == old('team_b_id')) selected @endif>
                                             {{ $team->name }}</option>
                                     @endforeach
                                 </select>
-                                @error('team_b')
+                                @error('team_b_id')
                                     <span>{{ $message }}</span>
                                 @enderror
                             </div>
-    
+
                             <div class="mb-3">
                                 <label for="venue" class="fw-bold my-1">Match Veune</label>
                                 <select name="venue" class="form-select">
                                     <option value="" disabled selected>Select venue</option>
                                     @foreach ($venues as $venue)
-                                        <option value="{{ $venue->name }}" @if ($venue->name == old('venue')) selected @endif>
+                                        <option value="{{ $venue->name }}"
+                                            @if ($venue->name == old('venue')) selected @endif>
                                             {{ $venue->name }}</option>
                                     @endforeach
                                 </select>
@@ -89,14 +92,15 @@
                                 @enderror
                             </div>
                         </div>
-    
+
                         <div class="px-2">
                             <div class="mb-3">
                                 <label for="format" class="fw-bold my-1">Match Format</label>
                                 <select name="format" class="form-select">
                                     <option value="" disabled selected>Select format</option>
                                     @foreach ($formats as $format)
-                                        <option value="{{ $format }}" @if ($format == old('format')) selected @endif>
+                                        <option value="{{ $format }}"
+                                            @if ($format == old('format')) selected @endif>
                                             {{ $format }}</option>
                                     @endforeach
                                 </select>
@@ -104,16 +108,17 @@
                                     <span>{{ $message }}</span>
                                 @enderror
                             </div>
-    
+
                             <div class="mb-4">
                                 <label for="time" class="fw-bold my-1">Match Time</label>
                                 <input style="width: 300px" type="datetime-local" class="form-control" name="time"
-                                    value="{{ \Carbon\Carbon::parse(old('time'))->format('Y-m-d') }}" placeholder="time">
+                                    value="{{ old('time', isset($time) ? \Carbon\Carbon::parse($time)->format('Y-m-d\TH:i') : '') }}"
+                                    placeholder="time">
                                 @error('time')
                                     <span>{{ $message }}</span>
                                 @enderror
                             </div>
-    
+
                             <input type="submit" class="btn btn-primary w-100 fw-bold mt-4" value="submit">
                         </div>
                     </div>
@@ -126,11 +131,25 @@
 
 @section('script')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                let message = document.getElementById('message');
-                message.parentNode.removeChild(message);
-            }, 3000);
+        const teamA = document.querySelector('#team-a');
+        const teamB = document.querySelector('#team-b');
+        teamA.addEventListener('change', () => {
+            const selectedTeam = teamA.value;
+            if (selectedTeam) {
+                const option = teamB.querySelector(`option[value="${selectedTeam}"]`);
+                if (option) {
+                    option.style.display = 'none';
+                }
+            }
+        });
+        teamB.addEventListener('change', () => {
+            const selectedTeam = teamB.value;
+            if (selectedTeam) {
+                const option = teamA.querySelector(`option[value="${selectedTeam}"]`);
+                if (option) {
+                    option.style.display = 'none';
+                }
+            }
         });
     </script>
 @endsection

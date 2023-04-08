@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'player list')
+@section('title', 'team ' . $team->name . 'players list')
 @section('style')
     <style>
         a {
@@ -18,14 +18,13 @@
     <div class="container py-5">
         <div>
             <div class="d-flex justify-content-between mb-3 alert alert-primary">
-                <h5 class="fw-bold text-uppercase text-primary"> player {{ $players }}</h5>
-                <h5 class="text-uppercase fw-bold text-primary">player list</h5>
-                <a class="h5 fw-bold d-flex justify-content-center align-items-center text-primary"
-                    href="{{ route('get.add-player') }}">
-                    <span class="text-uppercase">add</span><i class="fas fa-plus ms-2"></i>
+                <h5 class="fw-bold text-uppercase text-primary"> player {{ count($players) }}</h5>
+                <h5 class="fw-bold text-primary">{{ $team->name }} player list</h5>
+                <a class="h5 fw-bold d-flex justify-content-center align-items-center text-danger"
+                    href="{{ route('teams') }}">
+                    <span class="text-uppercase"></span><i class="fas fa-angle-double-left" style="font-size: 24px"></i>
                 </a>
-                
-               
+
             </div>
             <div id="message">
                 @if (session('success'))
@@ -44,10 +43,7 @@
                         <th>Batting Style</th>
                         <th>Bowling Style</th>
                         <th>Born</th>
-                        {{-- <th>Biography</th>
-                        <th>Created at</th>
-                        <th>Updated at</th> --}}
-                        <th>Action</th>
+                        {{-- <th>Action</th> --}}
                     </tr>
                 </thead>
             </table>
@@ -59,15 +55,11 @@
     <script>
         $(document).ready(function() {
             $('#data').DataTable({
-                ajax: '{{ route('players') }}',
+                ajax: '{{ route('get.team-players', $team->id) }}',
                 processing: true,
                 serverSide: true,
                 language: {
                     "processing": "<div class='my-5' style='height: 25vh'></div>"
-                },
-                lengthMenu: [10, 25, 50, 100],
-                initComplete: function() {
-                    console.log(this.api().ajax.json());
                 },
                 columns: [{
                         data: 'id',
@@ -83,7 +75,7 @@
                         data: 'team_name',
                         name: 'team_name',
                         className: 'text-center',
-                        // render: (data)=>{
+                        // render: (data) => {
                         //     return (data.split(' '))[0]
                         // }
                     },
@@ -106,45 +98,15 @@
                         data: 'born',
                         name: 'born',
                         className: 'text-center',
-                        render: (data)=>{
+                        render: (data) => {
                             return (data.split(' ')[0]).split('-').reverse().join("-")
                         }
                     },
                     // {
-                    //     data: 'biography',
-                    //     name: 'biography',
-                    //     className: 'text-center',
-                    // },
-
-                    // {
-                    //     data: 'created_at',
-                    //     name: 'created_at',
-                    //     className: 'text-center',
-                    //     render: function(data) {
-                    //         let date = new Date(data);
-                    //         let year = date.getFullYear();
-                    //         let month = ('0' + (date.getMonth() + 1)).slice(-2);
-                    //         let day = ('0' + date.getDate()).slice(-2);
-                    //         return year + '-' + month + '-' + day;
-                    //     }
-                    // },
-                    // {
-                    //     data: 'updated_at',
-                    //     name: 'updated_at',
-                    //     className: 'text-center',
-                    //     render: function(data) {
-                    //         let date = new Date(data);
-                    //         let year = date.getFullYear();
-                    //         let month = ('0' + (date.getMonth() + 1)).slice(-2);
-                    //         let day = ('0' + date.getDate()).slice(-2);
-                    //         return year + '-' + month + '-' + day;
-                    //     }
-                    // },
-                    {
-                        data: 'actions',
-                        name: 'actions',
-                        className: 'text-center'
-                    }
+                    //     data: 'actions',
+                    //     name: 'actions',
+                    //     className: 'text-center'
+                    // }
                 ]
             });
         });
