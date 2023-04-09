@@ -53,13 +53,28 @@ class ScoreController extends Controller
         $firstBattingTeamScore = Score::where('match_id', $matchId)
             ->where('battingTeam_id', $firstBattingTeam->battingTeam_id)->get();
 
-        $firstTeamTotalRuns = $firstBattingTeamScore->sum('run');
+        //first innings total run calculation
+        $firstTeamTotalRuns = $firstBattingTeamScore->reduce(function ($totalRuns, $ball) {
+            $run = (int)$ball->run;
+            if (strpos($ball->run, 'NB') !== false) {
+                $run += (int)substr($ball->run, 2);
+            } else if (strpos($ball->run, 'WD') !== false) {
+                $run += (int)substr($ball->run, 2);
+            } else if (strpos($ball->run, 'LB') !== false) {
+                $run += (int)substr($ball->run, 2);
+            } else if (strpos($ball->run, 'B') !== false) {
+                $run += (int)substr($ball->run, 1);
+            }
+            return $totalRuns + $run;
+        }, 0);
+
         $firstTeamTotalWicket = $firstBattingTeamScore->sum('wicket');
         $firstTotalOver = intval($firstBattingTeamScore->sum('ball') / 6);
         $firstTeamOverCarry = $firstBattingTeamScore->sum('ball') % 6;
         $firstTeamTotalFours = $firstBattingTeamScore->where('run', 4)->count();
         $firstTeamTotalSixes = $firstBattingTeamScore->where('run', 6)->count();
 
+        // first innings extra run calculation
         $firstTeamTotalExtraRuns = $firstBattingTeamScore->sum(function ($ball) {
             $extraRun = 0;
             if (strpos($ball->extra, 'NB') !== false) {
@@ -74,7 +89,10 @@ class ScoreController extends Controller
             return $extraRun;
         });
 
-        $firstTeamIndividualScore = $firstBattingTeamScore->groupBy('batsman_id')
+        // 1st innings individual run calculation
+        $firstTeamIndividualScore = $firstBattingTeamScore->filter(function ($ball) {
+            return $ball->batsman_id != 0;
+        })->groupBy('batsman_id')
             ->map(function ($batsmanScores) {
                 $totalRuns = $batsmanScores->sum('run');
                 $totalBalls = $batsmanScores->sum('ball');
@@ -95,18 +113,18 @@ class ScoreController extends Controller
         // 1st innings highest run scorer
         $firstHighestRunScorerData = $firstTeamIndividualScore->max(function ($batsman) {
             return $batsman['runs'];
-        });
+        }) ?? 0;
         $firstHighestRunScorer = $firstTeamIndividualScore->filter(function ($batsman) use ($firstHighestRunScorerData) {
             return $batsman['runs'] == $firstHighestRunScorerData;
         })->first();
-        $firstHighestRunScorerBalls = $firstHighestRunScorer['balls'];
-        $firstHighestRunScorerRuns = $firstHighestRunScorer['runs'];
-        $firstHighestRunScorerFours = $firstHighestRunScorer['fours'];
-        $firstHighestRunScorerSixes = $firstHighestRunScorer['sixes'];
+        $firstHighestRunScorerBalls = $firstHighestRunScorer['balls'] ?? 0;
+        $firstHighestRunScorerRuns = $firstHighestRunScorer['runs'] ?? 0;
+        $firstHighestRunScorerFours = $firstHighestRunScorer['fours'] ?? 0;
+        $firstHighestRunScorerSixes = $firstHighestRunScorer['sixes'] ?? 0;
         $firstHighestRunScorerName = $firstTeamIndividualScore->search(function ($batsman) use ($firstHighestRunScorerData) {
             return $batsman['runs'] == $firstHighestRunScorerData;
-        });
-        $firstHighestRunScorerStrikeRate = number_format(($firstHighestRunScorerRuns / $firstHighestRunScorerBalls) * 100, 2);
+        }) ?? 0;
+        $firstHighestRunScorerStrikeRate = $firstHighestRunScorerBalls > 0 ? number_format(($firstHighestRunScorerRuns / $firstHighestRunScorerBalls) * 100, 2) : 0;
         $firstHighestRunScorer = [
             'name' => $firstHighestRunScorerName,
             'runs' => $firstHighestRunScorerRuns,
@@ -122,43 +140,49 @@ class ScoreController extends Controller
 
         $firstBowlingIndividualScore = $firstBowlingTeamScore->groupBy('bowler_id')
             ->map(function ($bowlerScores) {
-                $totalRuns = $bowlerScores->sum('run');
+                $totalRuns = $bowlerScores->sum(function ($ball) {
+                    return intval($ball->run);
+                });
+
                 $totalBalls = $bowlerScores->sum('ball');
                 $totalFours = $bowlerScores->where('run', 4)->count();
                 $totalSixes = $bowlerScores->where('run', 6)->count();
                 $totalWicket = $bowlerScores->where('wicket', 1)->count();
                 $totalOvers = floor($totalBalls / 6) . '.' . ($totalBalls % 6);
                 $economyRate = round($totalRuns / ($totalBalls / 6), 2);
-                // $totalExtra = $bowlerScores->sum('extra');
                 $extraData = $bowlerScores->reduce(function ($carry, $ball) {
                     $extraRun = 0;
                     $noBallRun = 0;
                     $wideRun = 0;
-                    if (strpos($ball->extra, 'NB') !== false) {
+                    $noBallCount = 0;
+                    $wideBallCount = 0;
+                    if (strpos($ball->run, 'NB') !== false) {
                         $noBallRun += 1;
-                        $extraRun = (int)substr($ball->extra, 2);
-                    } else if (strpos($ball->extra, 'WD') !== false) {
+                        $noBallCount += 1;
+                        $extraRun = (int)substr($ball->run, 2);
+                    } else if (strpos($ball->run, 'WD') !== false) {
                         $wideRun += 1;
-                        $extraRun = (int)substr($ball->extra, 2);
-                    } else if (strpos($ball->extra, 'LB') !== false) {
-                        $extraRun = (int)substr($ball->extra, 2);
-                    } else if (strpos($ball->extra, 'B') !== false) {
-                        $extraRun = (int)substr($ball->extra, 1);
+                        $wideBallCount += 1;
+                        $extraRun = (int)substr($ball->run, 2);
+                    } else if (strpos($ball->run, 'LB') !== false) {
+                        $extraRun = (int)substr($ball->run, 2);
+                    } else if (strpos($ball->run, 'B') !== false) {
+                        $extraRun = (int)substr($ball->run, 1);
                     }
-                    // $carry['extra_runs'] += $extraRun; // it returns 5 run. but 1 need ball count (1 no ball 5 run)
-                    // $carry['no_ball_runs'] += $noBallRun * $extraRun;
-                    // $carry['wide_runs'] += $wideRun * $extraRun;
-
                     $carry['extra_runs'] += $extraRun;
-                    $carry['no_ball_runs'] += $noBallRun;
-                    $carry['wide_runs'] += $wideRun;
+                    $carry['no_ball_runs'] += $noBallRun * $extraRun;
+                    $carry['wide_runs'] += $wideRun * $extraRun;
+                    $carry['no_ball_count'] += $noBallCount;
+                    $carry['wide_ball_count'] += $wideBallCount;
                     return $carry;
-                }, ['extra_runs' => 0, 'no_ball_runs' => 0, 'wide_runs' => 0]);
+                }, ['extra_runs' => 0, 'no_ball_runs' => 0, 'wide_runs' => 0, 'no_ball_count' => 0, 'wide_ball_count' => 0]);
 
                 $totalExtra = $extraData['extra_runs'];
                 $totalNoBallRuns = $extraData['no_ball_runs'];
                 $totalWideRuns = $extraData['wide_runs'];
-
+                $totalNoCount = $extraData['no_ball_count'];
+                $totalWideCount = $extraData['wide_ball_count'];
+                $totalRuns += $totalExtra;
                 return [
                     'bowler_id' => $bowlerScores->first()->bowler_id,
                     'runs' => $totalRuns,
@@ -169,6 +193,8 @@ class ScoreController extends Controller
                     'totalExtra' => $totalExtra,
                     'totalNoBallRuns' => $totalNoBallRuns,
                     'totalWideRuns' => $totalWideRuns,
+                    'totalNoCount' => $totalNoCount,
+                    'totalWideCount' => $totalWideCount,
                     'economyRate' => $economyRate,
                     'totalOvers' => $totalOvers
                 ];
@@ -178,42 +204,60 @@ class ScoreController extends Controller
                 return [$player => $total];
             });
 
+        //  first innings economical bowler 
+        $firstMostEconomicalBowler = 0;
         $firstBowlingStats = $firstBowlingIndividualScore->toArray();
-        usort($firstBowlingStats, function ($a, $b) {
-            if ($a['balls'] == 0 && $b['balls'] == 0) {
-                return 0;
-            } elseif ($a['balls'] == 0) {
-                return 1;
-            } elseif ($b['balls'] == 0) {
-                return -1;
+        if (empty($firstBowlingStats)) {
+            $firstMostEconomicalBowler = [
+                'name' => 0,
+                'runs' => 0,
+                'totalOvers' => 0,
+                'economyRate' => 0,
+                'wickets' => 0,
+                'totalExtra' => 0,
+                'totalNoBallRuns' => 0,
+                'totalWideRuns' => 0
+            ];
+        } else {
+            // sort and get the most economical bowler
+            usort($firstBowlingStats, function ($a, $b) {
+                if ($a['balls'] == 0 && $b['balls'] == 0) {
+                    return 0;
+                } elseif ($a['balls'] == 0) {
+                    return 1;
+                } elseif ($b['balls'] == 0) {
+                    return -1;
+                }
+                return ($a['runs'] / $a['balls']) <=> ($b['runs'] / $b['balls']);
+            });
+            $firstMostEconomicalBowler = value($firstBowlingStats[0]);
+            $bowlerName = Player::where('id', $firstMostEconomicalBowler['bowler_id'])->value('name');
+            if ($bowlerName) {
+                $firstMostEconomicalBowler['name'] = $bowlerName;
+            } else {
+                $firstMostEconomicalBowler['name'] = 0;
             }
-            return ($a['runs'] / $a['balls']) <=> ($b['runs'] / $b['balls']);
-        });
-        $firstMostEconomicalBowler = value($firstBowlingStats[0]);
-        $bowlerName = Player::where('id', $firstMostEconomicalBowler['bowler_id'])->value('name');
-        $firstMostEconomicalBowler['name'] = $bowlerName;
-
-        // $firstMostEconomicalBowlerName = Player::find($firstMostEconomicalBowlerId)->name;
-
-        // $firstMostEconomicalBowlerData = [
-        //     "name" => $firstMostEconomicalBowlerName,
-        //     "runs" => $firstMostEconomicalBowler['runs'],
-        //     "overs" => $firstMostEconomicalBowler['totalOvers'],
-        //     "fours" => $firstMostEconomicalBowler['fours'],
-        //     "sixes" => $firstMostEconomicalBowler['sixes'],
-        //     "economy_rate" => $firstMostEconomicalBowler['economyRate']
-        // ];
-
-        // dd($firstMostEconomicalBowlerData);
-
-
-
-
+        }
 
         // second innings batting score calculation 
         $secondBattingTeamScore = Score::where('match_id', $matchId)
             ->where('battingTeam_id', $secondBattingTeam->battingTeam_id)->get();
-        $secondTeamTotalRuns = $secondBattingTeamScore->sum('run');
+        //first innings total run calculation
+        $secondTeamTotalRuns = $secondBattingTeamScore->reduce(function ($totalRuns, $ball) {
+            $run = (int)$ball->run;
+            if (strpos($ball->run, 'NB') !== false) {
+                $run += (int)substr($ball->run, 2);
+            } else if (strpos($ball->run, 'WD') !== false) {
+                $run += (int)substr($ball->run, 2);
+            } else if (strpos($ball->run, 'LB') !== false) {
+                $run += (int)substr($ball->run, 2);
+            } else if (strpos($ball->run, 'B') !== false) {
+                $run += (int)substr($ball->run, 1);
+            }
+            return $totalRuns + $run;
+        }, 0);
+
+
         $secondTeamTotalWicket = $secondBattingTeamScore->sum('wicket');
         $secondTotalOver = intval($secondBattingTeamScore->sum('ball') / 6);
         $secondTeamOverCarry = $secondBattingTeamScore->sum('ball') % 6;
@@ -233,7 +277,9 @@ class ScoreController extends Controller
             return $extraRun;
         });
 
-        $secondTeamIndividualScore = $secondBattingTeamScore->groupBy('batsman_id')
+        $secondTeamIndividualScore = $secondBattingTeamScore->filter(function ($ball) {
+            return $ball->batsman_id != 0;
+        })->groupBy('batsman_id')
             ->map(function ($batsmanScores) {
                 $totalRuns = $batsmanScores->sum('run');
                 $totalBalls = $batsmanScores->sum('ball');
@@ -251,6 +297,29 @@ class ScoreController extends Controller
                 return [$playerName => $runBallTotal];
             });
 
+        // 2nd innings highest run scorer
+        $secondHighestRunScorerData = $secondTeamIndividualScore->max(function ($batsman) {
+            return $batsman['runs'];
+        }) ?? 0;
+        $secondHighestRunScorer = $secondTeamIndividualScore->filter(function ($batsman) use ($secondHighestRunScorerData) {
+            return $batsman['runs'] == $secondHighestRunScorerData;
+        })->first();
+        $secondHighestRunScorerBalls = $secondHighestRunScorer['balls'] ?? 0;
+        $secondHighestRunScorerRuns = $secondHighestRunScorer['runs'] ?? 0;
+        $secondHighestRunScorerFours = $secondHighestRunScorer['fours'] ?? 0;
+        $secondHighestRunScorerSixes = $secondHighestRunScorer['sixes'] ?? 0;
+        $secondHighestRunScorerName = $secondTeamIndividualScore->search(function ($batsman) use ($secondHighestRunScorerData) {
+            return $batsman['runs'] == $secondHighestRunScorerData;
+        }) ?? 0;
+        $secondHighestRunScorerStrikeRate = $secondHighestRunScorerBalls > 0 ? number_format(($secondHighestRunScorerRuns / $secondHighestRunScorerBalls) * 100, 2) : 0;
+        $secondHighestRunScorer = [
+            'name' => $secondHighestRunScorerName,
+            'runs' => $secondHighestRunScorerRuns,
+            'balls' => $secondHighestRunScorerBalls,
+            'fours' => $secondHighestRunScorerFours,
+            'sixes' => $secondHighestRunScorerSixes,
+            'strike_rate' => $secondHighestRunScorerStrikeRate
+        ];
         $firstTeamScoreLine = Score::where('battingTeam_id', $firstBattingTeam->battingTeam_id)
             ->where('match_id', $matchId)->get(['run']);
 
@@ -258,45 +327,56 @@ class ScoreController extends Controller
             ->where('match_id', $matchId)->get(['run']);
 
 
-        //second innings bowling score calculation
+        //first innings bowling score calculation
         $secondBowlingTeamScore = Score::where('match_id', $matchId)
             ->where('bowlingTeam_id', $secondBowlingTeam->bowlingTeam_id)->get();
 
         $secondBowlingIndividualScore = $secondBowlingTeamScore->groupBy('bowler_id')
             ->map(function ($bowlerScores) {
-                $totalRuns = $bowlerScores->sum('run');
+                $totalRuns = $bowlerScores->sum(function ($ball) {
+                    return intval($ball->run);
+                });
                 $totalBalls = $bowlerScores->sum('ball');
                 $totalFours = $bowlerScores->where('run', 4)->count();
                 $totalSixes = $bowlerScores->where('run', 6)->count();
                 $totalWicket = $bowlerScores->where('wicket', 1)->count();
                 $totalOvers = floor($totalBalls / 6) . '.' . ($totalBalls % 6);
                 $economyRate = round($totalRuns / ($totalBalls / 6), 2);
-                // $totalExtra = $bowlerScores->sum('extra');
                 $extraData = $bowlerScores->reduce(function ($carry, $ball) {
                     $extraRun = 0;
                     $noBallRun = 0;
                     $wideRun = 0;
-                    if (strpos($ball->extra, 'NB') !== false) {
+                    $noBallCount = 0;
+                    $wideBallCount = 0;
+                    if (strpos($ball->run, 'NB') !== false) {
                         $noBallRun += 1;
-                        $extraRun = (int)substr($ball->extra, 2);
-                    } else if (strpos($ball->extra, 'WD') !== false) {
+                        $noBallCount += 1;
+                        $extraRun = (int)substr($ball->run, 2);
+                    } else if (strpos($ball->run, 'WD') !== false) {
                         $wideRun += 1;
-                        $extraRun = (int)substr($ball->extra, 2);
-                    } else if (strpos($ball->extra, 'LB') !== false) {
-                        $extraRun = (int)substr($ball->extra, 2);
-                    } else if (strpos($ball->extra, 'B') !== false) {
-                        $extraRun = (int)substr($ball->extra, 1);
+                        $wideBallCount += 1;
+                        $extraRun = (int)substr($ball->run, 2);
+                    } else if (strpos($ball->run, 'LB') !== false) {
+                        $extraRun = (int)substr($ball->run, 2);
+                    } else if (strpos($ball->run, 'B') !== false) {
+                        $extraRun = (int)substr($ball->run, 1);
                     }
                     $carry['extra_runs'] += $extraRun;
-                    $carry['no_ball_runs'] += $noBallRun;
-                    $carry['wide_runs'] += $wideRun;
+                    $carry['no_ball_runs'] += $noBallRun * $extraRun;
+                    $carry['wide_runs'] += $wideRun * $extraRun;
+                    $carry['no_ball_count'] += $noBallCount;
+                    $carry['wide_ball_count'] += $wideBallCount;
                     return $carry;
-                }, ['extra_runs' => 0, 'no_ball_runs' => 0, 'wide_runs' => 0]);
+                }, ['extra_runs' => 0, 'no_ball_runs' => 0, 'wide_runs' => 0, 'no_ball_count' => 0, 'wide_ball_count' => 0]);
 
                 $totalExtra = $extraData['extra_runs'];
                 $totalNoBallRuns = $extraData['no_ball_runs'];
                 $totalWideRuns = $extraData['wide_runs'];
+                $totalNoCount = $extraData['no_ball_count'];
+                $totalWideCount = $extraData['wide_ball_count'];
+                $totalRuns += $totalExtra;
                 return [
+                    'bowler_id' => $bowlerScores->first()->bowler_id,
                     'runs' => $totalRuns,
                     'balls' => $totalBalls,
                     'fours' => $totalFours,
@@ -305,6 +385,8 @@ class ScoreController extends Controller
                     'totalExtra' => $totalExtra,
                     'totalNoBallRuns' => $totalNoBallRuns,
                     'totalWideRuns' => $totalWideRuns,
+                    'totalNoCount' => $totalNoCount,
+                    'totalWideCount' => $totalWideCount,
                     'economyRate' => $economyRate,
                     'totalOvers' => $totalOvers
                 ];
@@ -314,10 +396,61 @@ class ScoreController extends Controller
                 return [$player => $total];
             });
 
+        // second innings economical bowler 
+        $secondMostEconomicalBowler = 0;
+        $secondBowlingStats = $secondBowlingIndividualScore->toArray();
+        if (empty($secondBowlingStats)) {
+            $secondMostEconomicalBowler = [
+                'name' => 0,
+                'runs' => 0,
+                'totalOvers' => 0,
+                'economyRate' => 0,
+                'wickets' => 0,
+                'totalExtra' => 0,
+                'totalNoBallRuns' => 0,
+                'totalWideRuns' => 0
+            ];
+        } else {
+            // sort and get the most economical bowler
+            usort($secondBowlingStats, function ($a, $b) {
+                if ($a['balls'] == 0 && $b['balls'] == 0) {
+                    return 0;
+                } elseif ($a['balls'] == 0) {
+                    return 1;
+                } elseif ($b['balls'] == 0) {
+                    return -1;
+                }
+                return ($a['runs'] / $a['balls']) <=> ($b['runs'] / $b['balls']);
+            });
+            $secondMostEconomicalBowler = value($secondBowlingStats[0]);
+            $bowlerName = Player::where('id', $secondMostEconomicalBowler['bowler_id'])->value('name');
+            if ($bowlerName) {
+                $secondMostEconomicalBowler['name'] = $bowlerName;
+            } else {
+                $secondMostEconomicalBowler['name'] = 0;
+            }
+        }
+        $runningInningsStatus = Innings::where('match_id', $matchId)->get();
+        $inningsOne = 0;
+        $inningsTwo = 0;
+        foreach ($runningInningsStatus as $innings) {
+            if ($innings->innings == 1) {
+                $inningsOne = $innings->status;
+            } elseif ($innings->innings == 1) {
+                $inningsTwo = $innings->status;
+            }
+        }
+        $inningsStatus = [
+            'inningsOne' => $inningsOne,
+            'inningsTwo' => $inningsTwo
+        ];
+        $outBatsmanList = Score::where('match_id', $matchId)->where('wicket', 1)->pluck('batsman_id')->toArray();
         return view(
             'pages.scores.scoreDashboard',
             [
+                'outBatsmanList' => $outBatsmanList,
                 'match' => $match,
+                'inningsStatus' => $inningsStatus,
                 'firstBattingSquad' => $firstBattingSquad,
                 'firstBowlingSquad' => $firstBowlingSquad,
                 'secondBattingSquad' => $secondBattingSquad,
@@ -348,9 +481,11 @@ class ScoreController extends Controller
                 'secondTeamIndividualScore' => $secondTeamIndividualScore,
                 'secondTeamScoreLine' => $secondTeamScoreLine,
                 'secondTeamTotalExtraRuns' => $secondTeamTotalExtraRuns,
+                'secondHighestRunScorer' => $secondHighestRunScorer,
 
                 // 2nd bowling
-                'secondBowlingIndividualScore' => $secondBowlingIndividualScore
+                'secondBowlingIndividualScore' => $secondBowlingIndividualScore,
+                'secondMostEconomicalBowler' => $secondMostEconomicalBowler,
             ]
         );
     }
@@ -361,32 +496,50 @@ class ScoreController extends Controller
         $batsmanId = $request->batsman_id[0];
         $battingTeamId = $request->battingTeamId[0];
         $bowlingTeamId = $request->bowlingTeamId[0];
-        // have to add teamId
-
         $run = $request->run;
         $wicket = $request->wicket;
         $extra = $request->extra;
-        if (!$extra) {
-            $extra = 0;
+
+        $previousScore = Score::where('match_id', $matchId)->orderBy('id', 'desc')->first();
+        $batsmanOut = $previousScore && $previousScore->wicket == 1 && $previousScore->batsman_id == $batsmanId;
+        if ($batsmanOut) {
+            $playerName = Squad::where('player_id', $batsmanId)->value('player_name');
+            return redirect()->route('get.live.match.score', ['id' => $matchId])
+                ->withDanger($playerName . ' is already out!');
         }
 
-        if (!$wicket) {
+
+        $ball = 0;
+        if ($run != null) {
+            $extra = 0;
             $wicket = 0;
+            $ball = 1;
+        } elseif ($extra != null) {
+            $wicket = 0;
+            $batsmanId = 0;
+            if (strpos($extra, 'LB') === 0 || strpos($extra, 'B') === 0) {
+                $ball = 1;
+                $run = $extra;
+            } else {
+                $run = $extra;
+                $extra = $extra;
+                $ball = 0;
+            }
+        } elseif ($wicket == 1) {
+            $run = 0;
+            $extra = 0;
+            $ball = 1;
         }
-        $score = new Score();
+        $score = new Score;
         $score->match_id = $matchId;
-        $score->run = $run;
-        if (!$extra) {
-            $score->ball = 1;
-        } else {
-            $score->ball = 0;
-        }
-        $score->batsman_id = $batsmanId;
         $score->bowler_id = $bowlerId;
-        $score->extra = $extra;
-        $score->wicket = $wicket;
+        $score->batsman_id = $batsmanId;
         $score->battingTeam_id = $battingTeamId;
         $score->bowlingTeam_id = $bowlingTeamId;
+        $score->run = $run;
+        $score->wicket = $wicket;
+        $score->extra = $extra;
+        $score->ball = $ball;
         $score->save();
 
         // $newScore = Score::where('match_id', $matchId)->get();
@@ -403,10 +556,17 @@ class ScoreController extends Controller
         //     $playerName = Player::where('id', $batsmanId)->value('name');
         //     return [$playerName => $runTotal];
         // });
-
         $playerName = Squad::where('player_id', $batsmanId)->value('player_name');
-        return redirect()->route('get.live.match.score', ['id' => $matchId])
-            ->withSuccess($run . ' runs by ' . $playerName);
+        if ($wicket == 1) {
+            $message = $playerName . ' is out!';
+            return redirect()->route('get.live.match.score', ['id' => $matchId])
+                ->withDanger($message);
+        } else {
+            $message = $run . ' runs by ' . $playerName;
+            return redirect()->route('get.live.match.score', ['id' => $matchId])
+                ->withSuccess($message);
+        }
+
 
 
 

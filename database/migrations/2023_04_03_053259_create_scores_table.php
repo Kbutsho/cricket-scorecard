@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('scores', function (Blueprint $table) {
             $table->id();
             $table->integer('match_id');
-            $table->integer('run');
+            $table->string('run');
             $table->integer('ball');
             $table->integer('batsman_id');
             $table->integer('bowler_id');
