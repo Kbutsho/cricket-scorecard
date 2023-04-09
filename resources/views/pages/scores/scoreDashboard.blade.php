@@ -35,10 +35,24 @@
             border: 0;
         }
 
+        .score-box {
+            border-radius: 100%;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 1px 2px;
+            height: 24px;
+            width: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 5px;
+            transition: 0.3s;
+            border: 0;
+        }
+
         .extra:hover,
         .run:hover,
         .score:hover,
-        .wkt:hover {
+        .wkt:hover,
+        .score-box:hover {
             cursor: pointer;
             box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 8px;
         }
@@ -238,12 +252,11 @@
                 <div class="col-md-5">
                     <div class="px-3 py-4 box
                     "style="height: 500px">
-                        <div style="margin-bottom: 20px;" class="text-center alert alert-success pb-1">
+                        <div style="margin-bottom: 10px;" class="text-center alert alert-success pb-1">
                             <h5 class="text-uppercase fw-bold">Score Board</h5>
-
                         </div>
-                        <div style="margin-bottom: 20px; background: #CFE2FF"
-                            class="run-card d-flex alert alert-success text-uppercase fw-bold">
+                        <div style="margin-bottom: 10px; background: #CFE2FF; border:none"
+                            class="run-card d-flex  btn btn-success py-3 text-uppercase fw-bold">
                             <span style="font-size:14px; height:24px; color: #485132" class=" pt-1 me-2">Run</span>
                             <button class="run" value="0" type="submit" name="run">0</button>
                             <button class="run" value="1" type="submit" name="run">1</button>
@@ -253,8 +266,8 @@
                             <button class="run" value="5" type="submit" name="run">5</button>
                             <button class="run" value="6" type="submit" name="run">6</button>
                         </div>
-                        <div style="margin-bottom: 20px; background: #CFE2FF"
-                            class="run-card d-flex  alert alert-success fw-bold">
+                        <div style="margin-bottom: 10px; background: #CFE2FF; border:none"
+                            class="run-card d-flex btn btn-success py-3 fw-bold">
                             <span style="font-size:14px; height:24px; color: #485132" class="text-uppercase pt-1 me-2">
                                 No Ball</span>
                             <button class="extra" value="NB1" type="submit" name="extra">1</button>
@@ -265,8 +278,8 @@
                             <button class="extra" value="NB6" type="submit" name="extra">6</button>
                             <button class="extra" value="NB7" type="submit" name="extra">7</button>
                         </div>
-                        <div style="margin-bottom: 20px; background: #CFE2FF"
-                            class="run-card d-flex alert alert-success fw-bold">
+                        <div style="margin-bottom: 10px; background: #CFE2FF; border:none"
+                            class="run-card d-flex  btn btn-success py-3 fw-bold">
                             <span style="font-size:14px; height:24px; color: #485132" class="text-uppercase pt-1 me-2">
                                 Wide</span>
                             <button class="extra" value="WD1" type="submit" name="extra">1</button>
@@ -275,19 +288,30 @@
                             <button class="extra" value="WD4" type="submit" name="extra">4</button>
                             <button class="extra" value="WD5" type="submit" name="extra">5</button>
                         </div>
-                        <div style="margin-bottom: 22px; background: #CFE2FF"
-                            class="run-card d-flex  alert alert-success fw-bold">
+                        <div style="margin-bottom: 10px; background: #CFE2FF; border:none"
+                            class="run-card d-flex btn btn-success py-3 fw-bold">
                             <span style="font-size:14px; height:24px; color: #485132" class="text-uppercase pt-1 me-2">
                                 BY RUN</span>
                             <button class="extra" value="B1" type="submit" name="extra">1</button>
-                            <button class="extra" value="B1" type="submit" name="extra">2</button>
-                            <button class="extra" value="B1" type="submit" name="extra">3</button>
-                            <button class="extra" value="B1" type="submit" name="extra">4</button>
-                            <button class="extra" value="B1" type="submit" name="extra">5</button>
-                            <button class="extra" value="B1" type="submit" name="extra">6</button>
+                            <button class="extra" value="B2" type="submit" name="extra">2</button>
+                            <button class="extra" value="B3" type="submit" name="extra">3</button>
+                            <button class="extra" value="B4" type="submit" name="extra">4</button>
+                            <button class="extra" value="B5" type="submit" name="extra">5</button>
+                            <button class="extra" value="B6" type="submit" name="extra">6</button>
                         </div>
-                        <div style="margin-bottom: 22px; background: #CFE2FF"
-                            class="run-card d-flex alert alert-success fw-bold">
+                        <div style="margin-bottom: 10px; background: #CFE2FF; border:none"
+                            class="run-card d-flex btn btn-success py-3 fw-bold">
+                            <span style="font-size:14px; height:24px; color: #485132" class="text-uppercase pt-1 me-2">
+                                LEG BY</span>
+                            <button class="extra" value="LB1" type="submit" name="extra">1</button>
+                            <button class="extra" value="LB1" type="submit" name="extra">2</button>
+                            <button class="extra" value="LB1" type="submit" name="extra">3</button>
+                            <button class="extra" value="LB1" type="submit" name="extra">4</button>
+                            <button class="extra" value="LB1" type="submit" name="extra">5</button>
+                            <button class="extra" value="LB1" type="submit" name="extra">6</button>
+                        </div>
+                        <div style="margin-bottom: 10px; background: #CFE2FF; border:none"
+                            class="run-card d-flex btn btn-success py-3 fw-bold">
                             <span style="font-size:14px; height:24px; color: #485132" class="text-uppercase pt-1 me-2">
                                 Wicket</span>
                             <button class="wkt" value="1" type="submit" name="wicket">+</button>
@@ -308,7 +332,7 @@
                                         {{ $firstTeamTotalRuns }}/{{ $firstTeamTotalWicket }}
                                     </h6>
                                     <h6 style="font-size:14px" class="fw-bold"><span class="text-primary">Over
-                                        </span>{{ $firstTotalOver }}.{{ $firstTeamOverCarry }}
+                                        </span>{{ $firstTotalOver }}
                                         (20)
                                     </h6>
 
@@ -390,7 +414,7 @@
                                         <td>{{ $score['balls'] }}</td>
                                         <td>{{ $score['fours'] }}</td>
                                         <td>{{ $score['sixes'] }}</td>
-                                        <td>{{ round(($score['runs'] / $score['balls']) * 100, 2) }}</td>
+                                        <td>{{ $score['strike_rate'] }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -433,11 +457,38 @@
                         </table>
 
                         <div class="score-line my-3">
-                            <h6 class="fw-bold text-uppercase text-primary">Score Line</h6>
+                            <h6 class="fw-bold text-uppercase text-primary mb-3">Score Line</h6>
                             <div class="d-flex flex-wrap">
-                                @foreach ($firstTeamScoreLine as $scoreLine)
-                                    <span class="text-dark fw-bold my-1 score"><small style="font-size: 12px">
-                                            {{ $scoreLine->run }}</small></span>
+
+                                @php
+                                    $ballCount = 0;
+                                    $overCount = 0;
+                                   
+                                @endphp
+                                <span style="font-size: 10px" class="w-100 text-uppercase my-1 fw-bold text-dark">over {{ $overCount + 1 }}</span>
+                                @foreach ($firstTeamScoreLine as $key => $score)
+                                    @if (strpos($score->score_line, 'NB') === 0)
+                                    @elseif(strpos($score->score_line, 'WD') === 0)
+                                    @else
+                                        @php
+                                            $ballCount++;
+                                        @endphp
+                                    @endif
+                                    <span class="text-dark fw-bold my-1 score-box ">
+                                        <small
+                                            style="font-size: 10px; color:{{ $score->score_line == 'W' || strpos($score->score_line, 'NB') === 0 || strpos($score->score_line, 'WD') === 0 || strpos($score->score_line, 'LB') === 0 || strpos($score->score_line, 'B') === 0 ? 'red' : 'black' }}">
+                                            {{ $score->score_line }}
+                                        </small>
+                                    </span>
+                                    @if ($ballCount == 6)
+                                        @php
+                                            $overCount++;
+                                            $ballCount = 0;
+                                        @endphp
+                                        <div class="w-100 my-1 fw-bold text-uppercase  ">
+                                                <span class="text-dark" style="font-size: 10px">Over {{ $overCount + 1 }}</span>
+                                            </div>
+                                    @endif 
                                 @endforeach
                             </div>
                         </div>
