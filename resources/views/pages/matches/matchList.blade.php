@@ -37,13 +37,14 @@
             <table id="data" class="pt-3 table table-hover table-striped table-borderless">
                 <thead class="bg-primary">
                     <tr class="text-center text-white">
-                        <th>ID</th>
-                        <th>Match</th>
-                        <th>Venue</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Format</th>
-                        <th class="text-white">Status</th>
+                        <th class="text-center">ID</th>
+                        <th class="text-center">Match</th>
+                        <th class="text-center">Venue</th>
+                        <th class="text-center">Date</th>
+                        <th class="text-center">Time</th>
+                        <th class="text-center">Format</th>
+                        <th class="text-center">Over</th>
+                        <th class="text-center">Status</th>
                     </tr>
                 </thead>
             </table>
@@ -102,6 +103,11 @@
                     {
                         data: 'format',
                         name: 'format',
+                        className: 'text-center',
+                    },
+                    {
+                        data: 'over',
+                        name: 'over',
                         className: 'text-center',
                     },
                     {

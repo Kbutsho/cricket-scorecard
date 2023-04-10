@@ -58,7 +58,7 @@ Route::middleware(['auth'])->group(function () {
    //score working
     Route::get('live/match/{id}/score', [ScoreController::class, 'showAdminScore'])->name('get.live.match.score');
     Route::post('live/match/{id}/score', [ScoreController::class, 'updateScore'])->name('post.live.match.score');
-    
+    Route::get('live/match/{matchId}/update/innings', [ScoreController::class, 'updateInnings'])->name('update.live.match.innings');
     // select squad
 
     // Route::post('match/live/{id}/squad/save', [LiveMatchController::class, 'saveSquad'])->name('save.live-match.squad');

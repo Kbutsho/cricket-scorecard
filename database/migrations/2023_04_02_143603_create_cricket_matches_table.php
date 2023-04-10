@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('team_b_id');
             $table->string('venue');
             $table->string('format');
+            $table->integer('over');
             $table->dateTime('time');
             $table->string('status');
             $table->timestamps();

@@ -44,11 +44,12 @@ class MatchController extends Controller
     {
         $teams = Team::all();
         $venues = Venue::all();
-        $formats = ['TEST', 'ODI', 'T20'];
+        $formats = ['ODI', 'T20', 'T10'];
         return view('pages.matches.addMatch', [
             'venues' => $venues,
             'teams' => $teams,
-            'formats' => $formats
+            'formats' => $formats,
+
         ]);
     }
     public function AddMatch(Request $request)
@@ -59,14 +60,24 @@ class MatchController extends Controller
             'team_b_id' => 'required',
             'venue' => 'required',
             'time' => 'required',
-            'format' => 'required'
+            'format' => 'required',
         ]);
+        $format = $request->format;
+        $over = 0;
+        if($format == 'ODI'){
+            $over = 50;
+        }else if($format == 'T20'){
+            $over = 20;
+        }else if($format == 'T10'){
+            $over = 10;
+        }
         $match = new CricketMatch();
         $match->team_a_id = $request->team_a_id;
         $match->team_b_id = $request->team_b_id;
         $match->venue = $request->venue;
         $match->time = $request->time;
         $match->format = $request->format;
+        $match->over = $over;
         $match->status = 'upcoming';
         $match->save();
         return redirect('matches')->withSuccess('match added successfully!');
