@@ -38,7 +38,7 @@
                 <thead class="bg-primary">
                     <tr class="text-center text-white">
                         <th class="text-center">ID</th>
-                        <th class="text-center">Match</th>
+                        <th>Match</th>
                         <th class="text-center">Venue</th>
                         <th class="text-center">Date</th>
                         <th class="text-center">Time</th>
@@ -73,7 +73,6 @@
                     {
                         data: 'team_a_name',
                         name: 'team_a_name',
-                        className: 'text-center',
                         render: function(data, type, row) {
                             return '<span>' + row.team_a_name + ' vs ' + row.team_b_name + '</span>';
                         }

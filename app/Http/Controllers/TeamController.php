@@ -105,7 +105,12 @@ class TeamController extends Controller
             });
 
             if ($request->ajax()) {
-                return DataTables::of($players)->make(true);
+                return DataTables::of($players)
+                ->addColumn('actions', function ($row) {
+                    return "<a href='" . route('get.player-update', $row->id) . "' class='btn btn-sm btn-success px-2 mr-2'><i style='font-size: 12px' class='me-1 fas fa-wrench'></i> Update</a>";
+                })
+                ->rawColumns(['actions'])
+                ->make(true);
             }
             return view(
                 'pages.teams.teamPlayers.teamPlayerList',

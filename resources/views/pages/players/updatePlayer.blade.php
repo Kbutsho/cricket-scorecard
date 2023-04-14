@@ -124,10 +124,15 @@
                             </div>
 
                             <div class="mb-1">
-                                <label for="image" class="fw-bold my-1">Profile image</label>
-                                <input type="file" name="image" placeholder="image" class="form-control"
-                                    style="width: 300px">
-                                @error('image')
+                                <label for="status" class="fw-bold my-1">Status</label>
+                                <select name="status" class="form-select">
+                                    @foreach ($status as $key => $value)
+                                        <option value="{{ $value }}">
+                                            {{ $key }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('status')
                                     <span>{{ $message }}</span>
                                 @enderror
                             </div>

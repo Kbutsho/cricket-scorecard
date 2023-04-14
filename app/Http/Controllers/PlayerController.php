@@ -13,7 +13,7 @@ class PlayerController extends Controller
     {
         if ($request->ajax()) {
             $players = Player::with('team')->get();
-            
+
             return DataTables::of($players)
                 ->addColumn('team_name', function ($team) {
                     return $team->team->name;
@@ -38,7 +38,7 @@ class PlayerController extends Controller
         $teams = Team::all();
         $roles = ['Batting AllRounder', 'Bowling AllRounder', 'WK Batsman', 'Batsman', 'Bowler'];
         $battingStyle = ['Right handed', 'Left handed'];
-        $bowlingStyle = ['Right arm pace', 'Left arm pace', 'Left arm spin', 'Right arm spin'];
+        $bowlingStyle = ['Right arm pace', 'Left arm pace', 'Left arm spin', 'Right arm spin', 'N/A'];
         return view('pages.players.addPlayer', ['teams' => $teams, 'battingStyle' => $battingStyle, 'bowlingStyle' => $bowlingStyle, 'roles' => $roles]);
     }
 
@@ -56,7 +56,7 @@ class PlayerController extends Controller
         ]);
         $player = new Player();
         $player->name = $request->name;
-        // $player->image = $request->image;
+        $player->status = 1;
         $player->team_id = $request->team_id;
         $player->role = $request->role;
         $player->batting_style = $request->batting_style;
@@ -77,7 +77,14 @@ class PlayerController extends Controller
 
         $roles = ['Batting AllRounder', 'Bowling AllRounder', 'WK Batsman', 'Batsman', 'Bowler'];
         $battingStyle = ['Right handed', 'Left handed'];
-        $bowlingStyle = ['Right arm pace', 'Left arm pace', 'Left arm spin', 'Right arm spin'];
+        $bowlingStyle = ['Right arm pace', 'Left arm pace', 'Left arm spin', 'Right arm spin', 'N/A'];
+        $status =
+            [
+                'Active' => 1,
+                'Inactive' => 0,
+                'Injured' => 0,
+                'Retired' => 0
+            ];
 
         if (!$player) {
             return redirect('players')->withDanger('No player found for update!');
@@ -85,6 +92,7 @@ class PlayerController extends Controller
         return view(
             'pages.players.updatePlayer',
             [
+                'status' => $status,
                 'team' => $team,
                 'teams' => $teams,
                 'player' => $player,
@@ -106,7 +114,8 @@ class PlayerController extends Controller
             'batting_style' => 'required',
             'bowling_style' => 'required',
             'born' => 'required',
-            'biography' => 'required'
+            'biography' => 'required',
+            'status' => 'required'
         ]);
         $check = Player::find($request->id);
         if (!$check) {
@@ -115,6 +124,7 @@ class PlayerController extends Controller
             $player =  Player::find($request->id);
             $player->name = $request->name;
             $player->role = $request->role;
+            $player->status = $request->status;
             $player->team_id = $request->team_id;
             $player->batting_style = $request->batting_style;
             $player->bowling_style = $request->bowling_style;

@@ -27,6 +27,8 @@
     </script>
     {{-- fontawesome --}}
     <script src="https://kit.fontawesome.com/5301593776.js" crossorigin="anonymous"></script>
+    {{-- moment js --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script>
         $(document).ready(function() {
             setTimeout(function() {

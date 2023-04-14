@@ -10,7 +10,7 @@ use App\Models\Squad;
 use App\Models\Team;
 use Illuminate\Http\Request;
 
-class ScoreController extends Controller
+class TestController extends Controller
 {
     public function showAdminScore($matchId)
     {
@@ -19,33 +19,11 @@ class ScoreController extends Controller
             ->where('id', '=', $matchId)
             ->where('time', '<', $currentDate)
             ->first();
+
         $matchInInnings = Innings::where('match_id', $matchId)->first();
         if (!$match || !$matchInInnings) {
             return redirect('dashboard')->withDanger('Match ' . $matchId . ' not found!');
         }
-        // if (!$match) {
-        //     return redirect('dashboard')->withDanger('match id ' . $matchId . ' not found!');
-        // }
-        // if (!$matchInInnings) {
-        //     return redirect('dashboard')->withDanger('match id ' . $matchId . ' not found for score!');
-        // }
-        
-        // $firstBattingTeam = Innings::where('match_id', $matchId)
-        //     ->where('innings', 1)
-        //     ->select('battingTeam_id')
-        //     ->first();
-        // $firstBowlingTeam = Innings::where('match_id', $matchId)
-        //     ->where('innings', 1)
-        //     ->select('bowlingTeam_id')
-        //     ->first();
-        // $secondBattingTeam = Innings::where('match_id', $matchId)
-        //     ->where('innings', 2)
-        //     ->select('battingTeam_id')
-        //     ->first();
-        // $secondBowlingTeam = Innings::where('match_id', $matchId)
-        //     ->where('innings', 2)
-        //     ->select('bowlingTeam_id')
-        //     ->first();
 
         $TeamData = Innings::where('match_id', $matchId)
             ->whereIn('innings', [1, 2])
@@ -55,12 +33,12 @@ class ScoreController extends Controller
         $battingTeams = $TeamData->pluck('battingTeam_id')->toArray();
         $bowlingTeams = $TeamData->pluck('bowlingTeam_id')->toArray();
 
+
+
         $firstBattingSquad = Squad::where('team_id', $battingTeams[0])->where('match_id', $matchId)->get();
         $firstBowlingSquad = Squad::where('team_id', $bowlingTeams[0])->where('match_id', $matchId)->get();
-        $secondBattingSquad = $firstBowlingSquad;
-        $secondBowlingSquad = $firstBattingSquad;
-        // $secondBattingSquad = Squad::where('team_id', $battingTeams[1])->where('match_id', $matchId)->get();
-        // $secondBowlingSquad = Squad::where('team_id', $bowlingTeams[1])->where('match_id', $matchId)->get();
+        $secondBattingSquad = Squad::where('team_id', $battingTeams[1])->where('match_id', $matchId)->get();
+        $secondBowlingSquad = Squad::where('team_id', $bowlingTeams[1])->where('match_id', $matchId)->get();
 
         //first innings batting score calculation
         $firstBattingTeamScore = Score::where('match_id', $matchId)
@@ -71,21 +49,7 @@ class ScoreController extends Controller
         $firstTotalOver = floor($firstTotalBall / 6) . '.' . ($firstTotalBall % 6);
         $firstTeamTotalFours = $firstBattingTeamScore->where('run', 4)->count();
         $firstTeamTotalSixes = $firstBattingTeamScore->where('run', 6)->count();
-        // dd($firstTotalOver);
-        // first innings extra run calculation
-        // $firstTeamTotalExtraRuns = $firstBattingTeamScore->sum(function ($ball) {
-        //     $extraRun = 0;
-        //     if (strpos($ball->extra, 'NB') !== false) {
-        //         $extraRun = (int)substr($ball->extra, 2);
-        //     } else if (strpos($ball->extra, 'WD') !== false) {
-        //         $extraRun = (int)substr($ball->extra, 2);
-        //     } else if (strpos($ball->extra, 'LB') !== false) {
-        //         $extraRun = (int)substr($ball->extra, 2);
-        //     } else if (strpos($ball->extra, 'B') !== false) {
-        //         $extraRun = (int)substr($ball->extra, 1);
-        //     }
-        //     return $extraRun;
-        // });
+
         $firstTeamTotalExtraRuns = 0;
         foreach ($firstBattingTeamScore as $ball) {
             $extraRun = 0;
@@ -255,6 +219,8 @@ class ScoreController extends Controller
                 $firstMostEconomicalBowler['name'] = 0;
             }
         }
+
+
         // 2nd innings batting score calculation 
         $secondBattingTeamScore = Score::where('match_id', $matchId)
             ->where('battingTeam_id', $battingTeams[1])->get();
@@ -323,6 +289,7 @@ class ScoreController extends Controller
         //2nd innings bowling score calculation
         $secondBowlingTeamScore = Score::where('match_id', $matchId)
             ->where('bowlingTeam_id', $bowlingTeams[1])->get();
+            
         $secondBowlingIndividualScore = $secondBowlingTeamScore->groupBy('bowler_id')
             ->map(function ($bowlerScores) {
                 $totalRuns = $bowlerScores->sum(function ($ball) {
@@ -386,6 +353,8 @@ class ScoreController extends Controller
                 $player = Player::where('id', $bowlerId)->value('name');
                 return [$player => $total];
             });
+
+
         // second innings economical bowler 
         $secondMostEconomicalBowler = 0;
         $secondBowlingStats = $secondBowlingIndividualScore->toArray();
@@ -422,6 +391,7 @@ class ScoreController extends Controller
                 $secondMostEconomicalBowler['name'] = 0;
             }
         }
+
         $runningInningsStatus = Innings::where('match_id', $matchId)->get();
         $inningsOne = 0;
         $inningsTwo = 0;
@@ -598,10 +568,10 @@ class ScoreController extends Controller
                 $extraRun = (int)substr($extra, 1);
             }
             return redirect()->route('get.live.match.score', ['id' => $matchId])
-                ->withDanger("extra {$extraRun} run ({$extra}), " . 'bowler ' . $bowlerName . ', over ' . $bowlerOverCount . '/(' . $totalOverCount . ')');
+                ->withDanger("extra {$extraRun} {$extra} run, " . 'bowler ' . $bowlerName . ', over ' . $bowlerOverCount . '/(' . $totalOverCount . ')');
         }
         return redirect()->route('get.live.match.score', ['id' => $matchId])
-            ->withSuccess($run . " run by " . $batsmanName . ', bowler ' . $bowlerName . ', over ' . $bowlerOverCount . '/(' . $totalOverCount . ')');
+            ->withSuccess($run . " by " . $batsmanName . ', bowler ' . $bowlerName . ', over ' . $bowlerOverCount . '/(' . $totalOverCount . ')');
     }
     public function updateInnings($matchId)
     {

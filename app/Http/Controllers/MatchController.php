@@ -14,16 +14,12 @@ class MatchController extends Controller
     {
         // updating status with time
         $currentDate = date('Y-m-d H:i:s', strtotime('+6 hours'));
-        $matches = CricketMatch::where('status', '=', 'upcoming')
-            ->where('time', '<', $currentDate)
+        $matches = CricketMatch::where('time', '<', $currentDate)->where('status', '=', 'upcoming')
             ->get();
-
         foreach ($matches as $match) {
             $match->status = 'ongoing';
             $match->save();
         }
-        //  $match = CricketMatch::with(['teamA', 'teamB'])->get();
-        //  dd($match);
         if ($request->ajax()) {
             $match = CricketMatch::with(['teamA', 'teamB']);
             return DataTables::of($match)
@@ -64,11 +60,11 @@ class MatchController extends Controller
         ]);
         $format = $request->format;
         $over = 0;
-        if($format == 'ODI'){
+        if ($format == 'ODI') {
             $over = 50;
-        }else if($format == 'T20'){
+        } else if ($format == 'T20') {
             $over = 20;
-        }else if($format == 'T10'){
+        } else if ($format == 'T10') {
             $over = 10;
         }
         $match = new CricketMatch();

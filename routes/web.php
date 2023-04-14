@@ -1,21 +1,26 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LiveMatchController;
 use App\Http\Controllers\MatchController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\ScoreController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\VenueController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+Route::get('/', [HomeController::class, 'liveMatchList'])->name('home');
+Route::get('live/match/{id}', [HomeController::class, 'liveMatch'])->name('live');
+
 Route::middleware(['guest'])->group(function () {
     Route::get('login', [AuthController::class, 'ShowLoginForm'])->name('get.login');
     Route::post('login', [AuthController::class, 'Login'])->name('login');
+   
 });
+
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', [AuthController::class, 'Dashboard'])->name('dashboard');
     Route::get('logout', [AuthController::class, 'Logout'])->name('logout');
@@ -55,7 +60,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('live/match', [LiveMatchController::class, 'ShowAdminLiveMatchList'])->name('get.live.matches');
     Route::get('live/match/{id}/squad', [LiveMatchController::class, 'showSquadForm'])->name('get.live.match.squad');
     Route::post('live/match/{id}/squad', [LiveMatchController::class, 'saveSquad'])->name('post.live.match.squad');
-   //score working
+    //score working
     Route::get('live/match/{id}/score', [ScoreController::class, 'showAdminScore'])->name('get.live.match.score');
     Route::post('live/match/{id}/score', [ScoreController::class, 'updateScore'])->name('post.live.match.score');
     Route::get('live/match/{matchId}/update/innings', [ScoreController::class, 'updateInnings'])->name('update.live.match.innings');
@@ -67,8 +72,8 @@ Route::middleware(['auth'])->group(function () {
     // });
 
     // score controller
-   
-    Route::post('match/live/{id}/update/score', [ScoreController::class, 'updateScore'])->name('match.update.score');
-    // innings from 1 to 2
-    Route::post('/update-innings', 'ScoreController@updateInnings')->name('update-innings');
+
+    // Route::post('match/live/{id}/update/score', [ScoreController::class, 'updateScore'])->name('match.update.score');
+    // // innings from 1 to 2
+    // Route::post('/update-innings', 'ScoreController@updateInnings')->name('update-innings');
 });

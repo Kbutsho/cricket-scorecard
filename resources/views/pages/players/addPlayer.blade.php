@@ -99,7 +99,7 @@
                             </div>
 
                             <div class="mb-1">
-                                <label for="bowling_style" class="fw-bold my-1">Batting style</label>
+                                <label for="bowling_style" class="fw-bold my-1">BowlingS style</label>
                                 <select name="bowling_style" class="form-select">
                                     <option value="" disabled selected>select bowling style</option>
                                     @foreach ($bowlingStyle as $ball)

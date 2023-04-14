@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'score card dashboard')
+@section('title', 'live score')
 @section('style')
     <!-- CSS only -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
@@ -68,15 +68,7 @@
             color: red;
             display: flex;
         }
-        .run-box{
-            box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 3px;
-            border-radius: 10px;
-            transition: 0.3s;
-        }
-        
-        .run-box:hover {
-            box-shadow: rgba(0, 0, 0, 0.7) 0px 1px 3px;
-        }
+
         .box {
             box-shadow: rgba(0, 0, 0, 0.35) 0px 3px 8px;
             border-radius: 10px;
@@ -103,306 +95,35 @@
             border-top: 3px dashed #8c8b8b;
             margin: 20px 0;
         }
-
-        .batsman-checkbox[disabled] {
-            display: none;
-        }
     </style>
 @endsection
 
 @section('content')
-    @include('layouts.navbar')
     <div class="container py-5">
-        {{-- @if (session('danger'))
-            <script>
-                swal({
-                    // title: "warning",
-                    text: "{{ session('danger') }}",
-                    icon: "warning"
-                });
-            </script>
-        @elseif(session('success'))
-            <script>
-                swal({
-                    // title: "success",
-                    text: "{{ session('success') }}",
-                    icon: "success"
-                });
-            </script>
-        @endif --}}
-        <div class="message">
-            @if(session('success'))
-                <div class="alert alert-success w-100 fw-bold text-center">{{ session('success') }}</div>
-            @elseif(session('danger'))
-            <div class="alert alert-danger w-100 fw-bold text-center">{{ session('danger') }}</div>
-            @endif
-        </div>
-        <form action="{{ route('post.live.match.score', ['id' => $match->id]) }}" method="post">
-            @csrf
-            <input type="number" hidden name="matchId" value="{{ $match->id }}">
-            <div class="row mb-5">
-                @if ($inningsStatus['inningsOne'] == 1)
-                    <div class="col-md-7">
-                        <div class="box p-3">
-                            <div class="alert alert-success pb-1 d-flex justify-content-between align-items-center">
-                                <h5 class="fw-bold text-center text-uppercase">1st innings squad</h5>
-                                <a class="btn btn-outline-danger btn-sm fw-bold mb-2 text-uppercase"
-                                    href="{{ route('update.live.match.innings', ['matchId' => $match->id]) }}">
-                                    <i class="fas fa-external-link-alt me-1"></i>end innings
-                                </a>
-                            </div>
-                            <div id="firstInnings">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        @if ($firstBattingSquad && count($firstBattingSquad) > 0)
-                                            <h6 class="fw-bold btn btn-primary w-100 btn-sm">
-                                                {{ $firstBattingSquad[0]['team_name'] }} Batting
-                                                XI
-                                            </h6>
-                                            @foreach ($firstBattingSquad as $index => $player)
-                                                <div class="d-flex">
-                                                    <small
-                                                        class="me-2 fw-bold">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</small>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input batsman-checkbox" type="checkbox"
-                                                            name="batsman_id[]" value="{{ $player['player_id'] }}"
-                                                            @if (in_array($player['player_id'], old('batsman_id', [])) || in_array($player['player_id'], $outBatsmanList)) disabled @endif
-                                                            onclick="handleCheckboxClick(this, 'batsman', {{ json_encode($outBatsmanList) }})">
-                                                        <input type="checkbox" value="{{ $player['team_id'] }}" hidden
-                                                            name="battingTeamId[]">
-                                                        <small>{{ $player['player_name'] }}
-                                                            <span style="color: red; font-size:14px; font-weight:bold">
-                                                                @if (in_array($player['player_id'], $outBatsmanList))
-                                                                    (out)
-                                                                @endif
-                                                            </span>
-                                                        </small>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        @else
-                                            <small class="squad">1st innings - no batsman found!</small>
-                                        @endif
-                                    </div>
-                                    <div class="col-md-6">
-                                        @if ($firstBowlingSquad && count($firstBowlingSquad) > 0)
-                                            <h6 class="fw-bold btn btn-primary w-100 btn-sm">
-                                                {{ $firstBowlingSquad[0]['team_name'] }} Bowling
-                                                XI
-                                            </h6>
-                                            @foreach ($firstBowlingSquad as $index => $player)
-                                                <div class="d-flex">
-                                                    <small
-                                                        class="me-2 fw-bold">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</small>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="bowler_id[]"
-                                                            value="{{ $player['player_id'] }}"
-                                                            @if (in_array($player['player_id'], old('bowler_id', []))) checked @endif
-                                                            onclick="handleCheckboxClick(this, 'bowler')">
-                                                        <input type="checkbox" value="{{ $player['team_id'] }}" hidden
-                                                            name="bowlingTeamId[]">
-                                                        <small>{{ $player['player_name'] }}</small>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        @else
-                                            <small class="squad">1st innings - no bowler found!</small>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
+        <div>
+            <div class="alert alert-primary w-100 text-center mb-3 d-flex justify-content-between">
+                <h5 class="fw-bold">{{ $firstBattingTeamName[0]->team_name }} vs {{ $secondBattingTeamName[0]->team_name }}
+                </h5>
+                <a href="{{ route('home') }}" class="fw-bold text-danger">
+                    <i class="fas fa-angle-double-left" style="font-size: 24px"></i>
+                </a>
+            </div>
+            <div>
+                @if ($inningsStatus['inningsOne'] == 2 && $inningsStatus['inningsTwo'] == 2)
+                    @if ($firstTeamTotalRuns > $secondTeamTotalRuns)
+                        <div class="alert alert-success mt-3 text-center fw-bold">
+                            {{ $firstBattingTeamName[0]->team_name }} won by
+                            {{ $firstTeamTotalRuns - $secondTeamTotalRuns }} runs
                         </div>
-                    </div>
-                @elseif($inningsStatus['inningsTwo'] == 1)
-                    <div class="col-md-7">
-                        <div class="box p-3">
-                            <div class="alert alert-success pb-1 d-flex justify-content-between align-items-center">
-                                <h5 class="fw-bold text-center text-uppercase">2nd innings squad</h5>
-                                <a class="btn btn-outline-danger btn-sm fw-bold mb-2 text-uppercase"
-                                    href="{{ route('update.live.match.innings', ['matchId' => $match->id]) }}">
-                                    <i class="fas fa-external-link-alt me-1"></i>end match
-                                </a>
-                            </div>
-                            <div id="secondInnings">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        @if ($secondBattingSquad && count($secondBattingSquad) > 0)
-                                            <h6 class="fw-bold btn btn-primary w-100 btn-sm">
-                                                {{ $secondBattingSquad[0]['team_name'] }} Batting
-                                                XI
-                                            </h6>
-                                            @foreach ($secondBattingSquad as $index => $player)
-                                                <div class="d-flex">
-                                                    <small
-                                                        class="me-2 fw-bold">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</small>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input batsman-checkbox" type="checkbox"
-                                                            name="batsman_id[]" value="{{ $player['player_id'] }}"
-                                                            @if (in_array($player['player_id'], old('batsman_id', [])) || in_array($player['player_id'], $outBatsmanList)) disabled @endif
-                                                            onclick="handleCheckboxClick(this, 'batsman', {{ json_encode($outBatsmanList) }})">
-                                                        <input type="checkbox" value="{{ $player['team_id'] }}" hidden
-                                                            name="battingTeamId[]">
-                                                        <small>{{ $player['player_name'] }}
-                                                            <span style="color: red; font-size:14px; font-weight:bold">
-                                                                @if (in_array($player['player_id'], $outBatsmanList))
-                                                                    (out)
-                                                                @endif
-                                                            </span>
-                                                        </small>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        @else
-                                            <small class="squad">2nd innings - no batsman found!</small>
-                                        @endif
-                                    </div>
-                                    <div class="col-md-6">
-                                        @if ($secondBowlingSquad && count($secondBowlingSquad) > 0)
-                                            <h6 class="fw-bold btn btn-primary w-100 btn-sm">
-                                                {{ $secondBowlingSquad[0]['team_name'] }} Bowling
-                                                XI
-                                            </h6>
-                                            @foreach ($secondBowlingSquad as $index => $player)
-                                                <div class="d-flex">
-                                                    <small
-                                                        class="me-2 fw-bold">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</small>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="bowler_id[]"
-                                                            value="{{ $player['player_id'] }}"
-                                                            @if (in_array($player['player_id'], old('bowler_id', []))) checked @endif
-                                                            onclick="handleCheckboxClick(this, 'bowler')">
-                                                        <input type="checkbox" value="{{ $player['team_id'] }}" hidden
-                                                            name="bowlingTeamId[]">
-                                                        <small>{{ $player['player_name'] }}</small>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        @else
-                                            <small class="squad">2nd innings - no bowler found!</small>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
+                    @elseif($firstTeamTotalRuns < $secondTeamTotalRuns)
+                        <div class="alert alert-success mt-3 text-center fw-bold">
+                            {{ $secondBattingTeamName[0]->team_name }} won by {{ 10 - $secondTeamTotalWicket }} wickets
                         </div>
-                    </div>
-                @else
-                    <div class="col-md-12">
-
-                        <div class="btn btn-danger w-100 fw-bold py-2">match end!</div>
-                        @if ($firstTeamTotalRuns > $secondTeamTotalRuns)
-                            <div class="alert alert-success mt-3 text-center fw-bold">
-                                {{ $firstBattingSquad[0]['team_name'] }} won by
-                                {{ $firstTeamTotalRuns - $secondTeamTotalRuns }} runs
-                            </div>
-                        @elseif($firstTeamTotalRuns < $secondTeamTotalRuns)
-                            <div class="alert alert-success mt-3 text-center fw-bold">
-                                {{ $secondBattingSquad[0]['team_name'] }} won by {{ 10 - $secondTeamTotalWicket }} wickets
-                            </div>
-                        @else
-                            <div class="alert alert-success mt-3 text-center fw-bold">
-                                match draw!
-                            </div>
-                        @endif
-                    </div>
-                @endif
-                @if ($inningsStatus['inningsOne'] == 1 || $inningsStatus['inningsTwo'] == 1)
-                    <div class="col-md-5">
-                        <div class="p-3 box">
-                            <div style="margin-bottom: 10px;" class="text-center alert alert-success pb-1 ">
-                                <h5 class="text-uppercase fw-bold pb-2">Score Board</h5>
-                            </div>
-                            <div class="d-flex flex-column justify-content-around" style="height: 330px">
-                                <div style=" border:none" class="run-box py-2 run-card d-flex px-3 text-uppercase fw-bold">
-                                    <span style="font-size:14px; color: #485132" class=" pt-1 me-2">Run</span>
-                                    <button class="run btn-outline-success" value="0" type="submit"
-                                        name="run">0</button>
-                                    <button class="run btn-outline-success" value="1" type="submit"
-                                        name="run">1</button>
-                                    <button class="run btn-outline-success" value="2" type="submit"
-                                        name="run">2</button>
-                                    <button class="run btn-outline-success" value="3" type="submit"
-                                        name="run">3</button>
-                                    <button class="run btn-outline-success" value="4" type="submit"
-                                        name="run">4</button>
-                                    <button class="run btn-outline-success" value="5" type="submit"
-                                        name="run">5</button>
-                                    <button class="run btn-outline-success" value="6" type="submit"
-                                        name="run">6</button>
-                                </div>
-                                <div class="py-2 run-box px-3 run-card d-flex fw-bold">
-                                    <span style="font-size:14px; color: #485132" class="text-uppercase pt-1 me-2">
-                                        No Ball</span>
-                                    <button class="extra btn-outline-success" value="NB1" type="submit"
-                                        name="extra">1</button>
-                                    <button class="extra btn-outline-success" value="NB2" type="submit"
-                                        name="extra">2</button>
-                                    <button class="extra btn-outline-success" value="NB3" type="submit"
-                                        name="extra">3</button>
-                                    <button class="extra btn-outline-success" value="NB4" type="submit"
-                                        name="extra">4</button>
-                                    <button class="extra btn-outline-success" value="NB5" type="submit"
-                                        name="extra">5</button>
-                                    <button class="extra btn-outline-success" value="NB6" type="submit"
-                                        name="extra">6</button>
-                                    <button class="extra btn-outline-success" value="NB7" type="submit"
-                                        name="extra">7</button>
-                                </div>
-                                <div class="py-2 run-box px-3 run-card d-flex fw-bold">
-                                    <span style="font-size:14px;  color: #485132" class="text-uppercase pt-1 me-2">
-                                        Wide</span>
-                                    <button class="extra btn-outline-success" value="WD1" type="submit"
-                                        name="extra">1</button>
-                                    <button class="extra btn-outline-success" value="WD2" type="submit"
-                                        name="extra">2</button>
-                                    <button class="extra btn-outline-success" value="WD3" type="submit"
-                                        name="extra">3</button>
-                                    <button class="extra btn-outline-success" value="WD4" type="submit"
-                                        name="extra">4</button>
-                                    <button class="extra btn-outline-success" value="WD5" type="submit"
-                                        name="extra">5</button>
-                                </div>
-                                <div class="py-2 px-3 run-box run-card d-flex fw-bold">
-                                    <span style="font-size:14px; color: #485132" class="text-uppercase pt-1 me-2">
-                                        BY RUN</span>
-                                    <button class="extra btn-outline-success" value="B1" type="submit"
-                                        name="extra">1</button>
-                                    <button class="extra btn-outline-success" value="B2" type="submit"
-                                        name="extra">2</button>
-                                    <button class="extra btn-outline-success" value="B3" type="submit"
-                                        name="extra">3</button>
-                                    <button class="extra btn-outline-success" value="B4" type="submit"
-                                        name="extra">4</button>
-                                    <button class="extra btn-outline-success" value="B5" type="submit"
-                                        name="extra">5</button>
-                                    <button class="extra btn-outline-success" value="B6" type="submit"
-                                        name="extra">6</button>
-                                </div>
-                                <div class="py-2 px-3 run-box run-card d-flex fw-bold">
-                                    <span style="font-size:14px; color: #485132" class="text-uppercase pt-1 me-2">
-                                        LEG BY</span>
-                                    <button class="extra btn-outline-success" value="LB1" type="submit"
-                                        name="extra">1</button>
-                                    <button class="extra btn-outline-success" value="LB1" type="submit"
-                                        name="extra">2</button>
-                                    <button class="extra btn-outline-success" value="LB1" type="submit"
-                                        name="extra">3</button>
-                                    <button class="extra btn-outline-success" value="LB1" type="submit"
-                                        name="extra">4</button>
-                                    <button class="extra btn-outline-success" value="LB1" type="submit"
-                                        name="extra">5</button>
-                                    <button class="extra btn-outline-success" value="LB1" type="submit"
-                                        name="extra">6</button>
-                                </div>
-                                <div 
-                                    class="py-2 px-3 run-box run-card d-flex  fw-bold">
-                                    <span style="font-size:14px; color: #485132" class="text-uppercase pt-1 me-2">
-                                        Wicket</span>
-                                    <button class="wkt btn-outline-success" value="1" type="submit"
-                                        name="wicket">W</button>
-                                </div>
-                            </div>
+                    @else
+                        <div class="alert alert-success mt-3 text-center fw-bold">
+                            match draw!
                         </div>
-                    </div>
+                    @endif
                 @endif
             </div>
             <div class="row">
@@ -414,14 +135,13 @@
                                 <div style="font-size:14px">
                                     <h6 style="font-size:14px" class="fw-bold text-uppercase">
                                         <span
-                                            class="text-primary">{{ substr($firstBattingSquad[0]['team_name'], 0, 3) }}</span>
+                                            class="text-primary">{{ substr($firstBattingTeamName[0]->team_name, 0, 3) }}</span>
                                         {{ $firstTeamTotalRuns }}/{{ $firstTeamTotalWicket }}
                                     </h6>
                                     <h6 style="font-size:14px" class="fw-bold"><span class="text-primary">Over
                                         </span>{{ $firstTotalOver }}
-                                        ({{ $match->over }})
+                                        ({{ $matchTotalOver }})
                                     </h6>
-
                                 </div>
                                 <div>
                                     <h6 style="font-size:14px" class="fw-bold">
@@ -444,7 +164,6 @@
                                         {{ $firstTeamTotalFours }}</h6>
                                     <h6 style="font-size:14px" class="fw-bold "><span class="text-primary">Total 6S
                                         </span>{{ $firstTeamTotalSixes }}</h6>
-
                                 </div>
                             </div>
                             <div class="hr-style"></div>
@@ -460,7 +179,6 @@
                                         {{ $firstHighestRunScorer['sixes'] }}) </h6>
                                 </div>
                                 <div class="col-md-6">
-
                                     <h6 style="font-size:14px" class="fw-bold">Most ECO Bowler
                                         @if ($firstMostEconomicalBowler['name'] != 0)
                                             <span class="text-primary">{{ $firstMostEconomicalBowler['name'] }}</span>
@@ -477,13 +195,12 @@
                                 </div>
                             </div>
                         </div>
-
                         <h6 class="btn btn-primary w-100 fw-bold text-uppercase">Batting summary</h6>
                         <table class="table table-striped">
                             <thead class="bg-success text-white">
                                 <tr>
                                     <th>#</th>
-                                    <th>BATSMAN </th>
+                                    <th>BATSMAN</th>
                                     <th class="text-center">RUN</th>
                                     <th class="text-center">BALL</th>
                                     <th class="text-center">4s</th>
@@ -511,7 +228,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-
                         <h6 class="btn btn-primary w-100 fw-bold text-uppercase mt-3">Bowling summary</h6>
                         <table class="table table-striped">
                             <thead class="bg-success text-white">
@@ -547,15 +263,12 @@
                                 @endforeach
                             </tbody>
                         </table>
-
                         <div class="score-line my-3">
                             <h6 class="fw-bold text-uppercase text-primary mb-3">Score Line</h6>
                             <div class="d-flex flex-wrap">
-
                                 @php
                                     $ballCount = 0;
                                     $overCount = 0;
-                                    
                                 @endphp
                                 <span style="font-size: 10px" class="w-100 text-uppercase my-1 fw-bold text-dark">over
                                     {{ $overCount + 1 }}</span>
@@ -596,14 +309,13 @@
                                 <div style="font-size:14px">
                                     <h6 style="font-size:14px" class="fw-bold text-uppercase">
                                         <span
-                                            class="text-primary">{{ substr($secondBattingSquad[0]['team_name'], 0, 3) }}</span>
+                                            class="text-primary">{{ substr($secondBattingTeamName[0]->team_name, 0, 3) }}</span>
                                         {{ $secondTeamTotalRuns }}/{{ $secondTeamTotalWicket }}
                                     </h6>
                                     <h6 style="font-size:14px" class="fw-bold"><span class="text-primary">Over
                                         </span>{{ $secondTotalOver }}
-                                        ({{ $match->over }})
+                                        ({{ $matchTotalOver }})
                                     </h6>
-
                                 </div>
                                 <div>
                                     <h6 style="font-size:14px" class="fw-bold">
@@ -626,7 +338,6 @@
                                         {{ $secondTeamTotalFours }}</h6>
                                     <h6 style="font-size:14px" class="fw-bold "><span class="text-primary">Total 6S
                                         </span>{{ $secondTeamTotalSixes }}</h6>
-
                                 </div>
                             </div>
                             <div class="hr-style"></div>
@@ -678,8 +389,8 @@
                                     <tr>
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>
-                                            {{ $batsmanName }} @if (in_array($score['batsman_id'], $outBatsmanList))
-                                                <span style="color:red">(out)</span>
+                                            {{ $batsmanName }}  @if (in_array($score['batsman_id'], $outBatsmanList))
+                                                <span style="color:red">(out</span> <span class="text-dark" style="font-size:12px">- {{ $score['bowlerName'] }})</span>
                                             @else
                                                 <span style="color:blue">(not out)</span>
                                             @endif
@@ -767,9 +478,9 @@
                     </div>
                 </div>
             </div>
+            </form>
+        </div>
         </form>
-    </div>
-    </form>
     </div>
     @include('layouts.footer')
 @endsection

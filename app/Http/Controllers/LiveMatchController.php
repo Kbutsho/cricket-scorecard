@@ -18,23 +18,12 @@ class LiveMatchController extends Controller
     public function ShowAdminLiveMatchList()
     {
         $currentDate = date('Y-m-d H:i:s', strtotime('+6 hours'));
-        CricketMatch::where('time', '<', $currentDate)
+        CricketMatch::where('time', '<', $currentDate)->where('status', '=', 'upcoming')
             ->update(['status' => 'ongoing']);
         $matches = CricketMatch::with(['teamA', 'teamB'])
             ->where('time', '<', $currentDate)
+            ->where('status', '=', 'ongoing')
             ->get();
-        // Get innings in progress for each match
-        // $innings = Innings::where('status', 1)->get();
-        // $matchInningsInProgress = [];
-        // foreach ($innings as $inningsItem) {
-        //     $matchId = $inningsItem->match_id;
-        //     $inningsNumber = $inningsItem->innings;
-        //     if ($matches->where('id', $matchId)->first()) {
-        //         $matchInningsInProgress[$matchId] = "Innings $inningsNumber running";
-        //     } else {
-        //         $matchInningsInProgress[$matchId] = "match not started yet!";
-        //     }
-        // }
         return view('pages.matches.live.liveMatchList', [
             // 'matchInningsInProgress' => $matchInningsInProgress,
             'liveMatches' => $matches,

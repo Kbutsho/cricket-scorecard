@@ -43,7 +43,8 @@
                         <th>Batting Style</th>
                         <th>Bowling Style</th>
                         <th>Born</th>
-                        {{-- <th>Action</th> --}}
+                        <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
             </table>
@@ -74,10 +75,7 @@
                     {
                         data: 'team_name',
                         name: 'team_name',
-                        className: 'text-center',
-                        // render: (data) => {
-                        //     return (data.split(' '))[0]
-                        // }
+                        className: 'text-center'
                     },
                     {
                         data: 'role',
@@ -102,11 +100,23 @@
                             return (data.split(' ')[0]).split('-').reverse().join("-")
                         }
                     },
-                    // {
-                    //     data: 'actions',
-                    //     name: 'actions',
-                    //     className: 'text-center'
-                    // }
+                    {
+                        data: 'status',
+                        name: 'status',
+                        className: 'text-center',
+                        render: (data) => {
+                            if (data === 0) {
+                                return 'Inactive'
+                            } else {
+                                return "Active"
+                            }
+                        }
+                    },
+                    {
+                        data: 'actions',
+                        name: 'actions',
+                        className: 'text-center'
+                    }
                 ]
             });
         });

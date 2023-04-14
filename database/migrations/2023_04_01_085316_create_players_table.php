@@ -18,9 +18,10 @@ return new class extends Migration
             $table->integer('team_id');
             $table->enum('role', ['Batting AllRounder', 'Bowling AllRounder', 'WK Batsman', 'Batsman', 'Bowler']);
             $table->enum('batting_style', ['Right handed', 'Left handed']);
-            $table->enum('bowling_style', ['Right arm pace', 'Left arm pace', 'Left arm spin','Right arm spin']);
+            $table->enum('bowling_style', ['Right arm pace', 'Left arm pace', 'Left arm spin','Right arm spin', 'N/A']);
             $table->dateTime('born');
             $table->text('biography');
+            $table->integer('status');
             $table->timestamps();
         });
     }

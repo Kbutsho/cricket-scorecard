@@ -24,8 +24,8 @@
                     href="{{ route('get.add-player') }}">
                     <span class="text-uppercase">add</span><i class="fas fa-plus ms-2"></i>
                 </a>
-                
-               
+
+
             </div>
             <div id="message">
                 @if (session('success'))
@@ -44,9 +44,7 @@
                         <th>Batting Style</th>
                         <th>Bowling Style</th>
                         <th>Born</th>
-                        {{-- <th>Biography</th>
-                        <th>Created at</th>
-                        <th>Updated at</th> --}}
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -67,7 +65,6 @@
                 },
                 lengthMenu: [10, 25, 50, 100],
                 initComplete: function() {
-                    console.log(this.api().ajax.json());
                 },
                 columns: [{
                         data: 'id',
@@ -83,9 +80,6 @@
                         data: 'team_name',
                         name: 'team_name',
                         className: 'text-center',
-                        // render: (data)=>{
-                        //     return (data.split(' '))[0]
-                        // }
                     },
                     {
                         data: 'role',
@@ -106,40 +100,22 @@
                         data: 'born',
                         name: 'born',
                         className: 'text-center',
-                        render: (data)=>{
+                        render: (data) => {
                             return (data.split(' ')[0]).split('-').reverse().join("-")
                         }
                     },
-                    // {
-                    //     data: 'biography',
-                    //     name: 'biography',
-                    //     className: 'text-center',
-                    // },
-
-                    // {
-                    //     data: 'created_at',
-                    //     name: 'created_at',
-                    //     className: 'text-center',
-                    //     render: function(data) {
-                    //         let date = new Date(data);
-                    //         let year = date.getFullYear();
-                    //         let month = ('0' + (date.getMonth() + 1)).slice(-2);
-                    //         let day = ('0' + date.getDate()).slice(-2);
-                    //         return year + '-' + month + '-' + day;
-                    //     }
-                    // },
-                    // {
-                    //     data: 'updated_at',
-                    //     name: 'updated_at',
-                    //     className: 'text-center',
-                    //     render: function(data) {
-                    //         let date = new Date(data);
-                    //         let year = date.getFullYear();
-                    //         let month = ('0' + (date.getMonth() + 1)).slice(-2);
-                    //         let day = ('0' + date.getDate()).slice(-2);
-                    //         return year + '-' + month + '-' + day;
-                    //     }
-                    // },
+                    {
+                        data: 'status',
+                        name: 'status',
+                        className: 'text-center',
+                        render: (data) =>{
+                            if (data === 0 ){
+                                return 'Inactive'
+                            }else{
+                                return "Active"
+                            }
+                        }
+                    },
                     {
                         data: 'actions',
                         name: 'actions',

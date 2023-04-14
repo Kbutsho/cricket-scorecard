@@ -26,10 +26,9 @@
             width: 20px;
             background: green;
             border-radius: 100%;
-            animation: pulse 1.5s ease-in-out infinite;
         }
 
-        @keyframes pulse {
+        /* @keyframes pulse {
             0% {
                 transform: scale(1);
             }
@@ -41,14 +40,14 @@
             100% {
                 transform: scale(1);
             }
-        }
+        } */
     </style>
 @endsection
 
 @section('content')
     @include('layouts.navbar')
     <div class="container">
-        <div id="message">
+        <div class="message">
             @if (session('danger'))
                 <div class="alert alert-danger fw-bold my-2"> {{ session('danger') }}</div>
             @endif
@@ -60,15 +59,9 @@
                     <div class="d-flex justify-content-between">
                         <h6 class="fw-bold">{{ $match->teamA->name }} vs {{ $match->teamB->name }}</h6>
                         <small class="fw-bold text-success ms-3">{{ $match->format }}</small>
-                        <div class="dot"></div>
+                        <div class="dot me-1"></div>
                     </div>
-
-                    {{-- @if (isset($matchInningsInProgress[$match->id]))
-                        <h6 class="fw-bold" style="color: red"> {{ $matchInningsInProgress[$match->id] }}</h6>
-                    @endif --}}
-
                     <span class="text-dark">{{ $match->venue }} national cricket stadium</span>
-
                     <div class="d-flex justify-content-between text-dark">
                         <span class="fw-bold">Local time</span>
                         <span>{{ date('g:i A', strtotime($match->time)) }} (+06 GTM)</span>
@@ -76,8 +69,6 @@
                     </div>
                 </a>
             @endforeach
-
-
         </div>
     </div>
     @include('layouts.footer')

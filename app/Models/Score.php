@@ -8,8 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Score extends Model
 {
     use HasFactory;
-    // public function batsman()
-    // {
-    //     return $this->hasMany(Player::class, 'batsman_id', 'id');
-    // }
+    protected $fillable = [
+        'match_id',
+        'score_line',
+        'run',
+        'ball',
+        'batsman_id',
+        'bowler_id',
+        'battingTeam_id',
+        'bowlingTeam_id',
+        'wicket',
+        'extra'
+    ];
 }
