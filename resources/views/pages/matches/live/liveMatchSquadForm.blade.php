@@ -133,7 +133,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="team col-md-5 d-flex flex-column justify-content-between">
                         <input type="number" name="match_id" hidden value={{ $match->id }}>
                         <div>

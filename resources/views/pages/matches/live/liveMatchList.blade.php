@@ -27,20 +27,6 @@
             background: green;
             border-radius: 100%;
         }
-
-        /* @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.3);
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        } */
     </style>
 @endsection
 
@@ -48,8 +34,10 @@
     @include('layouts.navbar')
     <div class="container">
         <div class="message">
-            @if (session('danger'))
-                <div class="alert alert-danger fw-bold my-2"> {{ session('danger') }}</div>
+            @if (session('success'))
+                <div class="alert alert-success fw-bold"> {{ session('success') }}</div>
+            @elseif(session('danger'))
+                <div class="alert alert-danger fw-bold"> {{ session('danger') }}</div>
             @endif
         </div>
         <h3 class="py-5 fw-bold text-primary text-uppercase">Live match {{ count($liveMatches) }}</h3>
@@ -75,28 +63,5 @@
 @endsection
 
 @section('script')
-    <script>
-        $(document).ready(function() {
-            const $battingTeams = $('input[name="batting_team"]');
-            const $bowlingTeams = $('input[name="bowling_team"]');
-
-            $battingTeams.change(function() {
-                const battingTeam = $('input[name="batting_team"]:checked').val();
-                const bowlingTeam = $('input[name="bowling_team"]:checked').val();
-                if (battingTeam === bowlingTeam) {
-                    alert("You can't select the same team for batting and bowling.");
-                    $(this).prop('checked', false);
-                }
-            });
-            $bowlingTeams.change(function() {
-                const battingTeam = $('input[name="batting_team"]:checked').val();
-                const bowlingTeam = $('input[name="bowling_team"]:checked').val();
-
-                if (battingTeam === bowlingTeam) {
-                    alert("You can't select the same team for batting and bowling.");
-                    $(this).prop('checked', false);
-                }
-            });
-        });
-    </script>
+   
 @endsection

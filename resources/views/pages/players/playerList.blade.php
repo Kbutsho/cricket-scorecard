@@ -24,10 +24,8 @@
                     href="{{ route('get.add-player') }}">
                     <span class="text-uppercase">add</span><i class="fas fa-plus ms-2"></i>
                 </a>
-
-
             </div>
-            <div id="message">
+            <div class="message">
                 @if (session('success'))
                     <div class="alert alert-success fw-bold text-center"> {{ session('success') }}</div>
                 @elseif(session('danger'))

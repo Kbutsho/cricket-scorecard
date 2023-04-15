@@ -33,7 +33,7 @@
 
 @section('content')
     <div class="container py-5">
-        <div id="message">
+        <div class="message">
             @if (session('danger'))
                 <div class="alert alert-danger fw-bold my-2"> {{ session('danger') }}</div>
             @elseif(session('success'))

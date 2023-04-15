@@ -7,14 +7,13 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav ms-auto">
-                
-                {{-- <a class="nav-link text-white fw-bold text-uppercase" href="{{ route('teams') }}">Teams</a>
-                <a class="nav-link text-white fw-bold text-uppercase" href="{{ route('players') }}">Players</a>
-                <a class="nav-link text-white fw-bold text-uppercase" href="{{ route('matches') }}">Matches</a>
-                <a class="nav-link text-white fw-bold text-uppercase" href="{{ route('venues') }}">Venues</a> --}}
-                <a class="nav-link text-white fw-bold text-uppercase" href="{{ route('dashboard') }}">Dashboard</a>
-                {{-- <a class="nav-link text-white fw-bold text-uppercase" href="{{ route('get.live.matches') }}">Live</a> --}}
-                <a class="nav-link fw-bold text-uppercase" href="{{ route('logout') }}" style="color: red">Logout</a>
+                {{-- <a class="nav-link text-white fw-bold mx-2" href="{{ route('teams') }}">Teams</a>
+                <a class="nav-link text-white fw-bold mx-2" href="{{ route('players') }}">Players</a>
+                <a class="nav-link text-white fw-bold mx-2" href="{{ route('matches') }}">Matches</a>
+                <a class="nav-link text-white fw-bold mx-2" href="{{ route('venues') }}">Venues</a> --}}
+                <a class="nav-link text-white fw-bold mx-2" href="{{ route('dashboard') }}">Dashboard</a>
+                {{-- <a class="nav-link text-white fw-bold mx-2" href="{{ route('get.live.matches') }}">Live</a> --}}
+                <a class="nav-link fw-bold mx-2" href="{{ route('logout') }}" style="color: red">Logout</a>
             </div>
         </div>
     </div>
