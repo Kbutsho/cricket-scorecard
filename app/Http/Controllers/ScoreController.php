@@ -13,6 +13,7 @@ use App\Services\ScoreService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class ScoreController extends Controller
 {
@@ -206,7 +207,12 @@ class ScoreController extends Controller
             }
             return redirect()->route('get.live.match.score', ['id' => $matchId])
                 ->withSuccess($run . " run by " . $batsmanName . ', bowler ' . $bowlerName . ', over ' . $bowlerOverCount . '/(' . $totalOverCount . ')');
-        } catch (Exception $e) {
+        }
+        catch (ValidationException $e) {
+            DB::rollBack();
+            return back()->withErrors($e->errors())->withInput();
+        }
+        catch (Exception $e) {
             DB::rollBack();
             return redirect('dashboard')->withDanger($e->getMessage());
         }

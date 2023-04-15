@@ -8,6 +8,7 @@ use App\Models\Venue;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Yajra\DataTables\Facades\DataTables;
 
 class MatchController extends Controller
@@ -87,7 +88,12 @@ class MatchController extends Controller
             $match->save();
             DB::commit();
             return redirect('matches')->withSuccess('match added successfully!');
-        } catch (Exception $error) {
+        }
+        catch (ValidationException $e) {
+            DB::rollBack();
+            return back()->withErrors($e->errors())->withInput();
+        }
+        catch (Exception $error) {
             DB::rollBack();
             return redirect('dashboard')->withDanger($error->getMessage());
         }

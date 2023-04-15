@@ -2,17 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BattingSquad;
-use App\Models\BowlingSquad;
 use App\Models\CricketMatch;
 use App\Models\Innings;
-use App\Models\Player;
-use App\Models\Score;
 use App\Models\Squad;
-use App\Models\Team;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class LiveMatchController extends Controller
 {
@@ -37,7 +33,17 @@ class LiveMatchController extends Controller
     {
         try {
             $currentDate = date('Y-m-d H:i:s', strtotime('+6 hours'));
-            $match = CricketMatch::with(['teamA.teamPlayers', 'teamB.teamPlayers'])
+            // $match = CricketMatch::with(['teamA.teamPlayers', 'teamB.teamPlayers'])
+            //     ->where('id', '=', $id)
+            //     ->where('time', '<', $currentDate)
+            //     ->first();
+            $match = CricketMatch::with([
+                'teamA.teamPlayers' => function ($query) {
+                    $query->where('status', '=', '1');
+                }, 'teamB.teamPlayers' => function ($query) {
+                    $query->where('status', '=', '1');
+                }
+            ])
                 ->where('id', '=', $id)
                 ->where('time', '<', $currentDate)
                 ->first();
@@ -119,6 +125,9 @@ class LiveMatchController extends Controller
             DB::commit();
             return redirect()->route('get.live.match.score', ['id' => $id])
                 ->withSuccess('squad selected successfully!');
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return back()->withErrors($e->errors())->withInput();
         } catch (Exception $error) {
             DB::rollBack();
             return redirect('dashboard')->withDanger($error->getMessage());
