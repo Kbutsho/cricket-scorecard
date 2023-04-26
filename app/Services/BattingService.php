@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Score;
 use App\Models\Squad;
 use Illuminate\Support\Collection;
 

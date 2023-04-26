@@ -33,7 +33,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <h6 style="font-size:14px" class="fw-bold"> Highest Run <span
-                            class="text-primary">{{ $firstHighestRunScorer['batsmanName'] }}</span> </h6>
+                            class="text-primary">{{ $firstHighestRunScorer['batsmanName'] }}</span></h6>
                     <h6 style="font-size:14px" class="fw-bold">(R {{ $firstHighestRunScorer['runs'] }}, B
                         {{ $firstHighestRunScorer['balls'] }},
                         SR {{ $firstHighestRunScorer['strike_rate'] }} )</h6>
@@ -59,73 +59,73 @@
         <h6 class="btn btn-primary w-100 fw-bold text-uppercase">Batting summary</h6>
         <table class="table table-striped">
             <thead class="bg-success text-white">
-                <tr>
-                    <th>#</th>
-                    <th>BATSMAN</th>
-                    <th class="text-center">RUN</th>
-                    <th class="text-center">BALL</th>
-                    <th class="text-center">4s</th>
-                    <th class="text-center">6s</th>
-                    <th class="text-center">SR</th>
-                </tr>
+            <tr>
+                <th>#</th>
+                <th>BATSMAN</th>
+                <th class="text-center">RUN</th>
+                <th class="text-center">BALL</th>
+                <th class="text-center">4s</th>
+                <th class="text-center">6s</th>
+                <th class="text-center">SR</th>
+            </tr>
             </thead>
             <tbody>
-                @foreach ($firstTeamIndividualScore as $index => $score)
-                    <tr>
-                        <td>{{ $loop->index + 1 }}</td>
-                        <td>
-                            {{ $score['batsmanName'] }}
-                            @if ($score['outByBowlerName'])
-                                <span style="font-size:12px">
+            @foreach ($firstTeamIndividualScore as $index => $score)
+                <tr>
+                    <td>{{ $loop->index + 1 }}</td>
+                    <td>
+                        {{ $score['batsmanName'] }}
+                        @if ($score['outByBowlerName'])
+                            <span style="font-size:12px">
                                     <span style="color:red">(out</span>
                                     <span class="text-dark"> - {{ $score['outByBowlerName'] }})</span>
                                 </span>
-                            @else
-                                <span style="color:blue;font-size:12px">(not out)</span>
-                            @endif
-                        </td>
-                        <td class="text-center">{{ $score['runs'] }}</td>
-                        <td class="text-center"> {{ $score['balls'] }}</td>
-                        <td class="text-center">{{ $score['fours'] }}</td>
-                        <td class="text-center">{{ $score['sixes'] }}</td>
-                        <td class="text-center">{{ $score['strike_rate'] }}</td>
-                    </tr>
-                @endforeach
+                        @else
+                            <span style="color:blue;font-size:12px">(not out)</span>
+                        @endif
+                    </td>
+                    <td class="text-center">{{ $score['runs'] }}</td>
+                    <td class="text-center"> {{ $score['balls'] }}</td>
+                    <td class="text-center">{{ $score['fours'] }}</td>
+                    <td class="text-center">{{ $score['sixes'] }}</td>
+                    <td class="text-center">{{ $score['strike_rate'] }}</td>
+                </tr>
+            @endforeach
             </tbody>
         </table>
         <h6 class="btn btn-primary w-100 fw-bold text-uppercase mt-3">Bowling summary</h6>
         <table class="table table-striped">
             <thead class="bg-success text-white">
-                <tr>
-                    <th>#</th>
-                    <th>BOWLER</th>
-                    <th class="text-center">RUN</th>
-                    <th class="text-center">OVER</th>
-                    <th class="text-center">WICKET</th>
-                    <th class="text-center">4s</th>
-                    <th class="text-center">6s</th>
-                    <th class="text-center">NB</th>
-                    <th class="text-center">WIDE</th>
-                    <th class="text-center">EXTRA</th>
-                    <th class="text-center">ECO</th>
-                </tr>
+            <tr>
+                <th>#</th>
+                <th>BOWLER</th>
+                <th class="text-center">RUN</th>
+                <th class="text-center">OVER</th>
+                <th class="text-center">WICKET</th>
+                <th class="text-center">4s</th>
+                <th class="text-center">6s</th>
+                <th class="text-center">NB</th>
+                <th class="text-center">WIDE</th>
+                <th class="text-center">EXTRA</th>
+                <th class="text-center">ECO</th>
+            </tr>
             </thead>
             <tbody>
-                @foreach ($firstBowlingIndividualScore as $index => $score)
-                    <tr>
-                        <td>{{ $loop->index + 1 }}</td>
-                        <td>{{ $score['bowlerName'] }}</td>
-                        <td class="text-center">{{ $score['runs'] }}</td>
-                        <td class="text-center">{{ $score['totalOvers'] }}</td>
-                        <td class="text-center">{{ $score['wickets'] }}</td>
-                        <td class="text-center">{{ $score['fours'] }}</td>
-                        <td class="text-center">{{ $score['sixes'] }}</td>
-                        <td class="text-center">{{ $score['totalNoCount'] }}</td>
-                        <td class="text-center">{{ $score['totalWideCount'] }}</td>
-                        <td class="text-center">{{ $score['totalExtra'] }}</td>
-                        <td class="text-center">{{ $score['economyRate'] }}</td>
-                    </tr>
-                @endforeach
+            @foreach ($firstBowlingIndividualScore as $index => $score)
+                <tr>
+                    <td>{{ $loop->index + 1 }}</td>
+                    <td>{{ $score['bowlerName'] }}</td>
+                    <td class="text-center">{{ $score['runs'] }}</td>
+                    <td class="text-center">{{ $score['totalOvers'] }}</td>
+                    <td class="text-center">{{ $score['wickets'] }}</td>
+                    <td class="text-center">{{ $score['fours'] }}</td>
+                    <td class="text-center">{{ $score['sixes'] }}</td>
+                    <td class="text-center">{{ $score['totalNoCount'] }}</td>
+                    <td class="text-center">{{ $score['totalWideCount'] }}</td>
+                    <td class="text-center">{{ $score['totalExtra'] }}</td>
+                    <td class="text-center">{{ $score['economyRate'] }}</td>
+                </tr>
+            @endforeach
             </tbody>
         </table>
         <div class="score-line my-3">

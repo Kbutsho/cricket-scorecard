@@ -7,7 +7,6 @@ use App\Http\Controllers\MatchController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\ScoreController;
 use App\Http\Controllers\TeamController;
-use App\Http\Controllers\TestController;
 use App\Http\Controllers\VenueController;
 use Illuminate\Support\Facades\Route;
 

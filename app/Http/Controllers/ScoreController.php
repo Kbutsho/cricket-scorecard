@@ -39,7 +39,7 @@ class ScoreController extends Controller
 
             $BowlingService = new BowlingService();
             $firstBowlingIndividualScore = $BowlingService->individualScore($matchId, $firstBowlingSquad[0]->team_id);
-            $secondBowlingIndividualScore = $BowlingService->individualScore($matchId, $firstBattingSquad[0]->team_id); 
+            $secondBowlingIndividualScore = $BowlingService->individualScore($matchId, $firstBattingSquad[0]->team_id);
 
             $firstMostEconomicalBowler = $BowlingService->mostEconomicalBowler($firstBowlingIndividualScore);
             $secondMostEconomicalBowler = $BowlingService->mostEconomicalBowler($secondBowlingIndividualScore);
@@ -49,7 +49,7 @@ class ScoreController extends Controller
             $inningsStatus = $MatchOtherData['inningsStatus'];
             $firstTeamScoreLine = $MatchOtherData['firstTeamScoreLine'];
             $secondTeamScoreLine = $MatchOtherData['secondTeamScoreLine'];
-            
+
             return view(
                 'pages.scores.scoreDashboard',
                 [
@@ -207,61 +207,63 @@ class ScoreController extends Controller
             }
             return redirect()->route('get.live.match.score', ['id' => $matchId])
                 ->withSuccess($run . " run by " . $batsmanName . ', bowler ' . $bowlerName . ', over ' . $bowlerOverCount . '/(' . $totalOverCount . ')');
-        }
-        catch (ValidationException $e) {
+        } catch (ValidationException $e) {
             DB::rollBack();
             return back()->withErrors($e->errors())->withInput();
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return redirect('dashboard')->withDanger($e->getMessage());
         }
     }
     public function updateInnings($matchId)
     {
-        $innings1 = Innings::where('match_id', $matchId)->where('innings', 1)->first();
-        $innings2 = Innings::where('match_id', $matchId)->where('innings', 2)->first();
-
-        // ball calculation
-        $matchTotalBall = CricketMatch::where('id', $matchId)->value('over') * 6;
-        $innings1totalBalls = Score::where('match_id', $matchId)
-            ->where('bowlingTeam_id', $innings1->bowlingTeam_id)
-            ->sum('ball');
-        $innings2totalBalls = Score::where('match_id', $matchId)
-            ->where('bowlingTeam_id', $innings2->bowlingTeam_id)
-            ->sum('ball');
-
-        // wicket calculation
-        $innings1battingTeam = Score::where('match_id', $matchId)
-            ->where('battingTeam_id', $innings1->battingTeam_id)->get();
-        $innings1totalWicket = $innings1battingTeam->where('wicket', 1)->count();
-        $innings2battingTeam = Score::where('match_id', $matchId)
-            ->where('battingTeam_id', $innings2->battingTeam_id)->get();
-        $innings2totalWicket = $innings2battingTeam->where('wicket', 1)->count();
-
-        if ($innings1 && $innings2) {
-            if ($innings1->status == 1) {
-                if ($innings1totalBalls >= $matchTotalBall || $innings1totalWicket >= 10) {
-                    $innings1->status = 2;
-                    $innings1->save();
-                    $innings2->status = 1;
-                    $innings2->save();
-                    return redirect()->route('get.live.match.score', ['id' => $matchId])->withSuccess('2nd innings start!');
-                } else {
-                    return redirect()->route('get.live.match.score', ['id' => $matchId])->withDanger('1st innings not finished yet!');
-                }
-            } else if ($innings2->status == 1) {
-                if ($innings2totalBalls >= $matchTotalBall || $innings2totalWicket >= 10) {
-                    $innings2->status = 2;
-                    $innings2->save();
-                    $match = CricketMatch::find($matchId);
-                    $match->status = 'finished';
-                    $match->save();
-                    return redirect()->route('dashboard')->withSuccess('match end!');
-                } else {
-                    return redirect()->route('get.live.match.score', ['id' => $matchId])->withDanger('2nd innings not finished yet!');
+        try{
+            $innings1 = Innings::where('match_id', $matchId)->where('innings', 1)->first();
+            $innings2 = Innings::where('match_id', $matchId)->where('innings', 2)->first();
+    
+            // ball calculation
+            $matchTotalBall = CricketMatch::where('id', $matchId)->value('over') * 6;
+            $innings1totalBalls = Score::where('match_id', $matchId)
+                ->where('bowlingTeam_id', $innings1->bowlingTeam_id)
+                ->sum('ball');
+            $innings2totalBalls = Score::where('match_id', $matchId)
+                ->where('bowlingTeam_id', $innings2->bowlingTeam_id)
+                ->sum('ball');
+    
+            // wicket calculation
+            $innings1battingTeam = Score::where('match_id', $matchId)
+                ->where('battingTeam_id', $innings1->battingTeam_id)->get();
+            $innings1totalWicket = $innings1battingTeam->where('wicket', 1)->count();
+            $innings2battingTeam = Score::where('match_id', $matchId)
+                ->where('battingTeam_id', $innings2->battingTeam_id)->get();
+            $innings2totalWicket = $innings2battingTeam->where('wicket', 1)->count();
+    
+            if ($innings1 && $innings2) {
+                if ($innings1->status == 1) {
+                    if ($innings1totalBalls >= $matchTotalBall || $innings1totalWicket >= 10) {
+                        $innings1->status = 2;
+                        $innings1->save();
+                        $innings2->status = 1;
+                        $innings2->save();
+                        return redirect()->route('get.live.match.score', ['id' => $matchId])->withSuccess('2nd innings start!');
+                    } else {
+                        return redirect()->route('get.live.match.score', ['id' => $matchId])->withDanger('1st innings not finished yet!');
+                    }
+                } else if ($innings2->status == 1) {
+                    if ($innings2totalBalls >= $matchTotalBall || $innings2totalWicket >= 10) {
+                        $innings2->status = 2;
+                        $innings2->save();
+                        $match = CricketMatch::find($matchId);
+                        $match->status = 'finished';
+                        $match->save();
+                        return redirect()->route('dashboard')->withSuccess('match end!');
+                    } else {
+                        return redirect()->route('get.live.match.score', ['id' => $matchId])->withDanger('2nd innings not finished yet!');
+                    }
                 }
             }
+        }catch (Exception $e){
+            return redirect('dashboard')->withDanger($e->getMessage());
         }
     }
 }

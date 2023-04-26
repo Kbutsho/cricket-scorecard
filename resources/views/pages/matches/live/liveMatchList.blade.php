@@ -7,7 +7,6 @@
             grid-template-columns: repeat(4, 1fr);
             column-gap: 25px;
         }
-
         .live-card {
             padding: 20px;
             box-shadow: rgba(0, 0, 0, 0.35) 0px 2px 5px;
@@ -16,11 +15,9 @@
             transition: 0.3s;
             text-decoration: none;
         }
-
         .live-card:hover {
             box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 10px;
         }
-
         .dot {
             height: 20px;
             width: 20px;
@@ -63,5 +60,5 @@
 @endsection
 
 @section('script')
-   
+
 @endsection

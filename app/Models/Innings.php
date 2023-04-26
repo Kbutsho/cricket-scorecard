@@ -9,6 +9,7 @@ class Innings extends Model
 {
     use HasFactory;
     protected $table = 'innings';
+    protected $fillable = ['match_id', 'battingTeam_id', 'bowlingTeam_id', 'innings', 'status'];
 
     // public function match()
     // {

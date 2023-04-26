@@ -12,8 +12,7 @@
                 <div class="col-md-6">
                     @if ($secondBattingSquad && count($secondBattingSquad) > 0)
                         <h6 class="fw-bold btn btn-primary w-100 btn-sm">
-                            {{ $secondBattingSquad[0]['team_name'] }} Batting
-                            XI
+                            {{ $secondBattingSquad[0]['team_name'] }} Batting XI
                         </h6>
                         @foreach ($secondBattingSquad as $index => $player)
                             <div class="d-flex">

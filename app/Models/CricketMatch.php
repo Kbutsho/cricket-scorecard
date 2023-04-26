@@ -10,6 +10,7 @@ use App\Models\Team;
 class CricketMatch extends Model
 {
     use HasFactory;
+    protected $fillable = ['team_a_id', 'team_b_id', 'venue', 'format', 'over', 'time', 'status'];
 
     public function teamA()
     {
