@@ -62,8 +62,7 @@
                     "processing": "<div class='my-5' style='height: 25vh'></div>"
                 },
                 lengthMenu: [10, 25, 50, 100],
-                initComplete: function() {
-                },
+                initComplete: function() {},
                 columns: [{
                         data: 'id',
                         name: 'id',
@@ -106,10 +105,10 @@
                         data: 'status',
                         name: 'status',
                         className: 'text-center',
-                        render: (data) =>{
-                            if (data === 0 ){
-                                return 'Inactive'
-                            }else{
+                        render: (data) => {
+                            if (data === 0) {
+                                return '<span style="color: red;">Inactive</span>';
+                            } else {
                                 return "Active"
                             }
                         }

@@ -106,7 +106,7 @@
                         className: 'text-center',
                         render: (data) => {
                             if (data === 0) {
-                                return 'Inactive'
+                                return '<span style="color: red;">Inactive</span>';
                             } else {
                                 return "Active"
                             }
