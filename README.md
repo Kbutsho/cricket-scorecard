@@ -23,9 +23,7 @@ Follow these simple steps to get the Cricket Match Management Web Application up
 
 ## Screenshots
 
-### Admin Dashboard
 
-![Admin Dashboard](./images/admin-dashboard.png)
 
 ### Public Live Scores Page
 
@@ -43,9 +41,9 @@ Follow these simple steps to get the Cricket Match Management Web Application up
 
 
 
-
-![Alt Text](./ss/1.png)
-![Alt Text](./ss/2.png)
+### Admin Dashboard
+![Alt Text](./ss/1.png) <br/> <br/>
+![Alt Text](./ss/2.png) <br/> <br/>
 ![Alt Text](./ss/3.png)
 ![Alt Text](./ss/4.png)
 ![Alt Text](./ss/5.png)
