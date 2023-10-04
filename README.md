@@ -22,39 +22,37 @@ Follow these simple steps to get the Cricket Match Management Web Application up
 - **Public Live Scores**: Cricket fans and users can access a dedicated public page to view live match scores, ensuring they never miss a moment of the action.
 
 ## Screenshots
-
-
-
-### Public Live Scores Page
-
-![Public Live Scores](./images/public-live-scores.png)
-
-
-
-
-
-
-
-
-
-
-
-
-
-### Admin Dashboard
 ![Alt Text](./ss/1.png) <br> <br>
 ![Alt Text](./ss/2.png) <br> <br>
-![Alt Text](./ss/3.png)
-![Alt Text](./ss/4.png)
-![Alt Text](./ss/5.png)
-![Alt Text](./ss/6.png)
-![Alt Text](./ss/7.png)
-![Alt Text](./ss/1.png)
-![Alt Text](./ss/1.png)
-![Alt Text](./ss/1.png)
-![Alt Text](./ss/1.png)
-![Alt Text](./ss/1.png)
-![Alt Text](./ss/1.png)
-![Alt Text](./ss/1.png)
-![Alt Text](./ss/1.png)
-![Alt Text](./ss/1.png)
+![Alt Text](./ss/3.png) <br> <br>
+![Alt Text](./ss/4.png) <br> <br>
+![Alt Text](./ss/5.png) <br> <br>
+![Alt Text](./ss/6.png) <br> <br>
+![Alt Text](./ss/7.png) <br> <br>
+![Alt Text](./ss/8.png) <br> <br>
+![Alt Text](./ss/9.png) <br> <br>
+![Alt Text](./ss/10.png) <br> <br>
+![Alt Text](./ss/11.png) <br> <br>
+![Alt Text](./ss/12.png) <br> <br>
+![Alt Text](./ss/13.png) <br> <br>
+![Alt Text](./ss/14.png) <br> <br>
+![Alt Text](./ss/15.png) <br> <br>
+![Alt Text](./ss/16.png) <br> <br>
+![Alt Text](./ss/17.png) <br> <br>
+![Alt Text](./ss/18.png) <br> <br>
+![Alt Text](./ss/19.png) <br> <br>
+![Alt Text](./ss/20.png) <br> <br>
+![Alt Text](./ss/21.png) <br> <br>
+![Alt Text](./ss/22.png) <br> <br>
+![Alt Text](./ss/23.png) <br> <br>
+![Alt Text](./ss/25.png) <br> <br>
+![Alt Text](./ss/26.png) <br> <br>
+![Alt Text](./ss/27.png) <br> <br>
+![Alt Text](./ss/28.png) <br> <br>
+![Alt Text](./ss/29.png) <br> <br>
+![Alt Text](./ss/30.png) <br> <br>
+![Alt Text](./ss/31.png) <br> <br>
+![Alt Text](./ss/32.png) <br> <br>
+![Alt Text](./ss/33.png) <br> <br>
+![Alt Text](./ss/34.png) <br> <br>
+
